@@ -7,7 +7,8 @@
 #include <getopt.h>
 #include <uart.h>
 
-#include <loggingLib/log.h>
+#include "loggingLib/log.h"
+#include "srxl2/srxl2Bus.h"
 
 using namespace std;
 
@@ -40,17 +41,15 @@ int main ( int argc, char **argv ) {
 
     fprintf ( stderr, "starting serial device %s at baudrate %d\n", deviceFile, baudrate );
 
-   // if(!srxlInitBus(0, uartHandle, SRXL_SUPPORTED_BAUD_RATES))
+ 
 
     int8_t uart = uartInit ( deviceFile, baudrate );
     if (uart < 0) return -1;
     
-    while (1) {
-        uint8_t buffer[32];
-        int ret = uartReceiveBytes(uart, buffer, sizeof(buffer), 100);
-        if (ret) {
-            hexdump(buffer,ret, true, kLogError);
-        }
+    Srxl2Bus srxl2Bus(uart);
+   
+    while (true) {
+        srxl2Bus.run();
     }
     
     uartClose ( uart );

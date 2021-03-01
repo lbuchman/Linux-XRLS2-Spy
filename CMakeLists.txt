@@ -30,6 +30,7 @@ file(GLOB_RECURSE app_platform_cpp_files ./linux/*.cpp)
 file(GLOB_RECURSE lib_cpp_files ./extLib/*.cpp)
 file(GLOB_RECURSE lib_source_h_files ./extLib/*.h)
 
+
 add_executable(${PROJECT_NAME} ${app_source_h_files} ${app_source_cpp_files}  ${app_source_h_files} ${app_platform_cpp_files} ${lib_cpp_files} ${lib_source_h_files})
 
 
