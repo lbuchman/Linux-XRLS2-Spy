@@ -8,7 +8,7 @@
 #include <uart.h>
 
 #include "loggingLib/log.h"
-#include "srxl2/srxl2Bus.h"
+#include "SRXL2/srxl2Bus.h"
 
 using namespace std;
 
