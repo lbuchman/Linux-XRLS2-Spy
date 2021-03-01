@@ -233,7 +233,11 @@ int8_t uartReceiveBytes ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize,
 
     int retval = select ( serial_port+1, &rfds, NULL, NULL, &tv );
 
-    if ( retval < 0 ) {
+        if ( retval == 0) { //timeout
+            return 0;
+        }
+    
+    if ( retval < 0) {
         logme ( kLogError, LINEINFOFORMAT "Error %i from select():  %s\n", LINEINFO, errno, strerror ( errno ) );
         return -1;
     }
@@ -241,11 +245,15 @@ int8_t uartReceiveBytes ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize,
     if ( retval ) {
         int size = read ( serial_port, pBuffer, bufferSize );
         if ( size < 0 ) {
+            if (errno == EAGAIN) return 0;
             logme ( kLogError, LINEINFOFORMAT "Error %i from read():  %s\n", LINEINFO, errno, strerror ( errno ) );
             return -1;
         }
 
         return size;
+    }
+    else {
+     printf("xxxxxxxxxxxxxx\n");   
     }
 
     return 0;
