@@ -20,7 +20,6 @@ int main ( int argc, char **argv ) {
 
     opterr = 0;
 
-hexdump(deviceFile,sizeof(deviceFile), false, kLogError);
     while ( ( c = getopt ( argc, argv, "pb:h" ) ) != -1 ) {
         switch ( c ) {
         case 'b':
@@ -46,6 +45,13 @@ hexdump(deviceFile,sizeof(deviceFile), false, kLogError);
     int8_t uart = uartInit ( deviceFile, baudrate );
     if (uart < 0) return -1;
     
+    while (1) {
+        uint8_t buffer[32];
+        int ret = uartReceiveBytes(uart, buffer, sizeof(buffer), 100);
+        if (ret) {
+            hexdump(buffer,ret, true, kLogError);
+        }
+    }
     
     uartClose ( uart );
     printme(NEWLINE, NO_TIMESTAMP, "uart %s is closed", deviceFile);
