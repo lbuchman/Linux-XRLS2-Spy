@@ -1,8 +1,6 @@
 /*
 MIT License
 
-Copyright (c) 2019-2020 Horizon Hobby, LLC
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -25,7 +23,7 @@ SOFTWARE.
 // C library headers
 #include <stdio.h>
 #include <string.h>
-#include <cstdint>
+
 #include <iostream>
 #include <vector>
 
@@ -34,12 +32,57 @@ SOFTWARE.
 #include <errno.h> // Error integer and strerror() function
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
+#include <sys/time.h>
+#include <sys/types.h>
+#include <signal.h>
 
+#include <uart.h>
 #include <loggingLib/log.h>
 
 using namespace std;
 
-std::vector<int> uarts;        
+static std::vector<int> uarts;
+static int getTermiosBaudrate ( const int baudrate );
+static void signal_handler_IO ( int status );
+
+
+/**
+    @brief  signal handler
+    @return void
+*/
+void signal_handler_IO ( int signalNumber ) {
+    logme ( kLogError, LINEINFOFORMAT "Cought Signal %i\n", LINEINFO, signalNumber );
+
+    //  wait_flag = FALSE;
+}
+
+
+/**
+    @brief  convert baudrate to getTermiosBaudrate
+
+    @param  @param  baudrate        115200 or 400000
+    @return getTermiosBaudrate
+*/
+int getTermiosBaudrate ( const int baudrate ) {
+    switch ( baudrate ) {
+    case  115200:
+        return B115200;
+    case  230400:
+        return B230400;
+    case  460800:
+        return B460800;
+    case  500000:
+        return B500000;
+    case  921600:
+        return B921600;
+
+    default:
+        logme ( kLogError, LINEINFOFORMAT "Invalid baudrate %i, returning default 115200\n", LINEINFO, B115200 );
+        return B115200;
+    }
+
+    return B115200;
+}
 
 /**
     @brief  open uart device
@@ -48,21 +91,75 @@ std::vector<int> uarts;
     @param  baudrate        115200 or 400000
     @return bool:           uart index or < 0 if error
 */
-uint8_t uartInit ( const char* device, const int baudrate ) {
-    int serial_port = open ( device, O_RDWR );
-    
-    if (serial_port < 0) {
-        logme(kLogError, LINEINFOFORMAT "IError %i from open():  %s\n", LINEINFO, errno, strerror ( errno ) );
-        return  serial_port;   
+int8_t uartInit ( const char* device, const int baudRate ) {
+    struct sigaction saio;           /* definition of signal action */
+
+    int serial_port = open ( device, O_RDWR | O_EXCL | O_NDELAY | O_NOCTTY );
+
+    if ( serial_port < 0 ) {
+        logme ( kLogError, LINEINFOFORMAT "Error %i from open():  %s\n", LINEINFO, errno, strerror ( errno ) );
+        return  serial_port;
     }
+
+    uarts.push_back ( serial_port );
+    uint8_t uartNum = uarts.size() - 1;
+
+    /* install the signal handler before making the device asynchronous */
+    saio.sa_handler = signal_handler_IO;
+    sigemptyset ( &saio.sa_mask );
+    saio.sa_flags = 0;
+    saio.sa_restorer = NULL;
+    if ( sigaction ( SIGIO, &saio, NULL ) < 0 ) {
+        logme ( kLogError, LINEINFOFORMAT "Error %i from sigaction():  %s\n", LINEINFO, errno, strerror ( errno ) );
+        return -1;
+    }
+
+
+    if ( uartSetBaud ( uartNum, baudRate ) > 0 ) {
+        return -1;
+    }
+
+    return uartNum;
+}
+
+/**
+    @brief  close open uart device
+
+    @param  uart:           uart number
+    @return status:         0 is OK, < 0 failure
+*/
+void uartClose ( uint8_t uartNum ) {
+    if ( uartNum > uarts.size() - 1 ) {
+        logme ( kLogError, LINEINFOFORMAT "Error invalid uart %i:  %s\n", LINEINFO, uartNum );
+        return;
+    }
+    int & serial_port = uarts.at ( uartNum );
+    close ( serial_port );
+}
+
+/**
+    @brief  set baudrate
+
+    @param  uart:           uart number
+    @param  baudRate:       baudrate
+    @return void
+*/
+int8_t uartSetBaud ( uint8_t uartNum, uint32_t baudRate ) {
+
+    if ( uartNum > uarts.size() - 1 ) {
+        logme ( kLogError, LINEINFOFORMAT "Error invalid uart %i:  %s\n", LINEINFO, uartNum );
+        return -1;
+    }
+
+    int & serial_port = uarts.at ( uartNum );
 
     // Create new termios struc, we call it 'tty' for convention
     struct termios tty;
 
     // Read in existing settings, and handle any error
     if ( tcgetattr ( serial_port, &tty ) != 0 ) {
-        logme(kLogError, LINEINFOFORMAT "Error %i from tcgetattr():  %s\n", LINEINFO, errno, strerror ( errno ) );
-        close(serial_port);
+        logme ( kLogError, LINEINFOFORMAT "Error %i from tcgetattr():  %s\n", LINEINFO, errno, strerror ( errno ) );
+        close ( serial_port );
         return -1;
     }
 
@@ -86,35 +183,96 @@ uint8_t uartInit ( const char* device, const int baudrate ) {
     // tty.c_oflag &= ~OXTABS; // Prevent conversion of tabs to spaces (NOT PRESENT ON LINUX)
     // tty.c_oflag &= ~ONOEOT; // Prevent removal of C-d chars (0x004) in output (NOT PRESENT ON LINUX)
 
-    tty.c_cc[VTIME] = 10;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
+    tty.c_cc[VTIME] = 0;
     tty.c_cc[VMIN] = 0;
 
     // Set in/out baud rate to be 9600
-    cfsetispeed ( &tty, B9600 );
-    cfsetospeed ( &tty, B9600 );
+    cfsetispeed ( &tty, getTermiosBaudrate ( baudRate ) );
+    cfsetospeed ( &tty, getTermiosBaudrate ( baudRate ) );
+
+    tcflush ( serial_port, TCIFLUSH );
 
     // Save tty settings, also checking for error
     if ( tcsetattr ( serial_port, TCSANOW, &tty ) != 0 ) {
-        logme(kLogError, LINEINFOFORMAT "Error %i from tcgetattr():  %s\n", LINEINFO, errno, strerror ( errno ) );
-        close(serial_port);
+        logme ( kLogError, LINEINFOFORMAT "Error %i from tcgetattr():  %s\n", LINEINFO, errno, strerror ( errno ) );
+        close ( serial_port );
         return -1;
     }
 
-    
-    uarts.push_back(serial_port);
-    return uarts.size() - 1;
+    return 0;
 }
 
 /**
-    @brief  close open uart device
+    @brief  receive data from uart with timeout
 
     @param  uart:           uart number
+    @param  pBuffer:        pointer to the buffer
+    @param  bufferSize:     buffer size
+    @param  timeout_ms:     timeout in mSec
     @return status:         0 is OK, < 0 failure
 */
-void uartClose ( uint uart) {
-    if (uart > uarts.size() - 1) {
-        logme(kLogError, LINEINFOFORMAT "Error %i from close():  %s\n", LINEINFO, errno, strerror ( errno ) );
-        return;
+int8_t uartReceiveBytes ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint8_t timeout_ms ) {
+
+    struct timeval tv;
+    fd_set rfds;
+
+
+    if ( uartNum > uarts.size() - 1 ) {
+        logme ( kLogError, LINEINFOFORMAT "Error invalid uart %i:  %s\n", LINEINFO, uartNum );
+        return -1;
     }
-    close(uart);
+
+    int & serial_port = uarts.at ( uartNum );
+
+    FD_ZERO ( &rfds );
+    FD_SET ( 0, &rfds );
+    FD_SET ( serial_port, &rfds );
+
+    tv.tv_sec = 0;
+    tv.tv_usec = timeout_ms * 1000;
+
+    int retval = select ( serial_port+1, &rfds, NULL, NULL, &tv );
+
+    if ( retval < 0 ) {
+        logme ( kLogError, LINEINFOFORMAT "Error %i from select():  %s\n", LINEINFO, errno, strerror ( errno ) );
+        return -1;
+    }
+
+    if ( retval ) {
+        int size = read ( serial_port, pBuffer, bufferSize );
+        if ( size < 0 ) {
+            logme ( kLogError, LINEINFOFORMAT "Error %i from read():  %s\n", LINEINFO, errno, strerror ( errno ) );
+            return -1;
+        }
+
+        return size;
+    }
+
+    return 0;
+}
+
+/**
+    @brief  receive data from uart with timeout
+
+    @param  uart:           uart number
+    @param  pBuffer:        pointer to the buffer
+    @param  bufferSize:     buffer size
+    @param  timeout_ms:     timeout in mSec
+    @return status:         0 is OK, < 0 failure
+*/
+int8_t uartTransmit ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bytesToSend ) {
+    if ( uartNum > uarts.size() - 1 ) {
+        logme ( kLogError, LINEINFOFORMAT "Error invalid uart %i:  %s\n", LINEINFO, uartNum );
+        return -1;
+    }
+
+    int & serial_port = uarts.at ( uartNum );
+
+    int retval = write ( serial_port, pBuffer, bytesToSend );
+    if ( retval < 0 ) {
+        logme ( kLogError, LINEINFOFORMAT "Error %i from write():  %s\n", LINEINFO, errno, strerror ( errno ) );
+        return -1;
+    }
+
+    return retval;
 }

@@ -1,8 +1,6 @@
 /*
 MIT License
 
-Copyright (c) 2019-2020 Horizon Hobby, LLC
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -22,27 +20,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef __UART_H__
-#define __UART_H__
-
-#include <cstdint>
-
-// #ifdef __cplusplus
-// extern "C"
-// {
-// #endif
+// C library headers
+#include <stdio.h>
 
 
-int8_t uartInit(const char* device, const int baudRate); 
-void uartClose ( uint8_t uartNum);
-int8_t uartSetBaud(uint8_t uartNum, uint32_t baudRate);
-int8_t uartReceiveBytes(uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint8_t timeout_ms);
-int8_t uartTransmit(uint8_t uartNum, uint8_t* pBuffer, uint8_t bytesToSend); 
+// Linux headers
+#include <fcntl.h> // Contains file controls like O_RDWR
+#include <errno.h> // Error integer and strerror() function
+#include <unistd.h> // write(), read(), close()
+#include <sys/time.h>
+#include <sys/types.h>
 
-// #ifdef __cplusplus
-// } // extern "C"
-// #endif
+#include "elapsedTime.h"
 
- 
 
-#endif //__SRXL_H__
+static uint64_t startTime = getElapseTime();
+/**
+    @brief  get elapsed time since start up
+
+    @return elepsed time in uSec
+*/
+uint64_t getElapseTime() {
+    
+    struct timeval timeNow;
+    
+    gettimeofday(&timeNow, NULL);
+    
+    uint64_t ret = timeNow.tv_sec * 1000000 + timeNow.tv_usec - startTime;
+    return ret;
+}
+
+/**
+    @brief  reset  elapsed time
+
+    @return elepsed time in uSec
+*/
+void resetElapseTime() {
+    
+}

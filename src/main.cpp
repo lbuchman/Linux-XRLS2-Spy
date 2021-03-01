@@ -14,8 +14,7 @@ using namespace std;
 int main ( int argc, char **argv ) {
     int baudrate = 115200;
     char deviceFile[32] = "/dev/ttyUSB0";
-
-    printme(NEWLINE, NO_TIMESTAMP, "SRXL2 Spy Linux Rev 0.1");
+    printme(NEWLINE, TIMESTAMP, "SRXL2 Spy Linux Rev 0.1");
     
     int c;
 
