@@ -46,7 +46,7 @@ uint64_t getElapseTime() {
     
     gettimeofday(&timeNow, NULL);
     
-    uint64_t ret = timeNow.tv_sec * 1000000 + timeNow.tv_usec - startTime;
+    uint64_t ret = timeNow.tv_sec * 1000000 + timeNow.tv_usec  - startTime;
     return ret;
 }
 

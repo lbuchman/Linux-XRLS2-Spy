@@ -38,6 +38,7 @@ SOFTWARE.
 
 #include <uart.h>
 #include <loggingLib/log.h>
+#include <elapsedTime.h>
 
 using namespace std;
 
@@ -97,7 +98,7 @@ int8_t uartInit ( const char* device, const int baudRate ) {
     int serial_port = open ( device, O_RDWR | O_EXCL | O_NDELAY | O_NOCTTY );
 
     if ( serial_port < 0 ) {
-        logme ( kLogError, LINEINFOFORMAT "Error %i from open():  %s\n", LINEINFO, errno, strerror ( errno ) );
+        logme ( kLogError, LINEINFOFORMAT "Error %i from open():  %s, device %s\n", LINEINFO, errno, strerror ( errno ), device );
         return  serial_port;
     }
 
@@ -202,6 +203,8 @@ int8_t uartSetBaud ( uint8_t uartNum, uint32_t baudRate ) {
     return 0;
 }
 
+
+
 /**
     @brief  receive data from uart with timeout
 
@@ -211,7 +214,7 @@ int8_t uartSetBaud ( uint8_t uartNum, uint32_t baudRate ) {
     @param  timeout_ms:     timeout in mSec
     @return status:         0 is OK, < 0 failure
 */
-int8_t uartReceiveBytes ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint8_t timeout_ms ) {
+int8_t uartReceive ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint8_t timeout_ms ) {
 
     struct timeval tv;
     fd_set rfds;
@@ -249,14 +252,33 @@ int8_t uartReceiveBytes ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize,
             logme ( kLogError, LINEINFOFORMAT "Error %i from read():  %s\n", LINEINFO, errno, strerror ( errno ) );
             return -1;
         }
-
         return size;
-    }
-    else {
-     printf("xxxxxxxxxxxxxx\n");   
     }
 
     return 0;
+}
+
+/**
+    @brief  receive data from uart with timeout, wait till all bytes received
+
+    @param  uart:           uart number
+    @param  pBuffer:        pointer to the buffer
+    @param  bufferSize:     buffer size
+    @param  timeout_ms:     timeout in mSec
+    @return status:         0 is OK, < 0 failure
+*/
+int8_t uartReceiveBytes ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint8_t timeout_ms ) {
+
+    uint64_t timeoutAt = getElapseTime() + timeout_ms * 1000;
+    int bytesReceived = 0;
+
+    while ((timeoutAt > getElapseTime()) && (bytesReceived < bufferSize)) {
+        
+        int ret = uartReceive (uartNum, &pBuffer[bytesReceived], bufferSize - bytesReceived, timeout_ms );
+        if (ret) bytesReceived += ret;
+    }
+    
+    return bytesReceived;
 }
 
 /**
