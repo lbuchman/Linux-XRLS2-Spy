@@ -27,7 +27,7 @@ SOFTWARE.
 #include <cstdint>
 
 #ifdef __cplusplus
-  extern "C"
+extern "C"
 {
 #endif
 
@@ -39,6 +39,6 @@ void resetElapseTime();
 } // extern "C"
 #endif
 
- 
+
 
 #endif //__SRXL_H__

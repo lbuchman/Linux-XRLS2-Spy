@@ -92,8 +92,7 @@ void userProvidedHandleVtxData(SrxlVtxData* pVtxData);
 // User-provided routine to change the baud rate settings on the given UART:
 // uart - the same uint8_t value as the uart parameter passed to srxlInit()
 // baudRate - the actual baud rate (currently either 115200 or 400000)
-static inline void srxlChangeBaudRate(uint8_t uart, uint32_t baudRate)
-{
+static inline void srxlChangeBaudRate(uint8_t uart, uint32_t baudRate) {
     uartSetBaud(uart, baudRate);
 }
 
@@ -101,8 +100,7 @@ static inline void srxlChangeBaudRate(uint8_t uart, uint32_t baudRate)
 // uart - the same uint8_t value as the uart parameter passed to srxlInit()
 // pBuffer - a pointer to an array of uint8_t values to send over the UART
 // length - the number of bytes contained in pBuffer that should be sent
-static inline void srxlSendOnUart(uint8_t uart, uint8_t* pBuffer, uint8_t length)
-{
+static inline void srxlSendOnUart(uint8_t uart, uint8_t* pBuffer, uint8_t length) {
     uartTransmit(uart, pBuffer, length);
 }
 
@@ -110,8 +108,7 @@ static inline void srxlSendOnUart(uint8_t uart, uint8_t* pBuffer, uint8_t length
 // pTelemetryData - a pointer to the 16-byte SrxlTelemetryData transmit buffer to populate
 // NOTE: srxlTelemData is available as a global variable, so the memcpy line commented out below
 // could be used if you would prefer to just populate that with the next outgoing telemetry packet.
-static inline void srxlFillTelemetry(SrxlTelemetryData* pTelemetryData)
-{
+static inline void srxlFillTelemetry(SrxlTelemetryData* pTelemetryData) {
     //memcpy(pTelemetryData, srxlTelemData, sizeof(SrxlTelemetryData));
     userProvidedFillSrxlTelemetry(pTelemetryData);
 }
@@ -122,41 +119,35 @@ static inline void srxlFillTelemetry(SrxlTelemetryData* pTelemetryData)
 // NOTE: srxlChData is available as a global variable that contains all of the latest values
 // for channel data, so this callback is intended to be used if more control is desired.
 // It might make sense to only use this to trigger your own handling of the received servo values.
-static inline void srxlReceivedChannelData(SrxlChannelData* pChannelData, bool isFailsafe)
-{
+static inline void srxlReceivedChannelData(SrxlChannelData* pChannelData, bool isFailsafe) {
     userProvidedReceivedChannelData(pChannelData, isFailsafe);
 }
 
 // User-provided callback routine to handle reception of a bound data report (either requested or unprompted).
 // Return true if you want this bind information set automatically for all other receivers on all SRXL buses.
-static inline bool srxlOnBind(SrxlFullID device, SrxlBindData info)
-{
+static inline bool srxlOnBind(SrxlFullID device, SrxlBindData info) {
     // TODO: Add custom handling of bound data report here if needed
     return true;
 }
 
 // User-provided callback routine to handle reception of a VTX control packet.
-static inline void srxlOnVtx(SrxlVtxData* pVtxData)
-{
+static inline void srxlOnVtx(SrxlVtxData* pVtxData) {
     userProvidedHandleVtxData(pVtxData);
 }
 
 // Optional user-provided callback routine to handle Forward Programming command locally if supported
 #ifdef SRXL_INCLUDE_FWD_PGM_CODE
-static inline void srxlOnFwdPgm(uint8_t* pData, uint8_t dataLength)
-{
+static inline void srxlOnFwdPgm(uint8_t* pData, uint8_t dataLength) {
     // TODO: Pass data to Forward Programming library
 }
 #endif // SRXL_INCLUDE_FWD_PGM_CODE
 
 // User-provided routine to enter a critical section (only needed with multiple buses or if HW CRC is used externally)
-static inline void srxlEnterCriticalSection(void)
-{
+static inline void srxlEnterCriticalSection(void) {
 }
 
 // User-provided routine to exit a critical section (only needed with multiple buses or if HW CRC is used externally)
-static inline void srxlExitCriticalSection(void)
-{
+static inline void srxlExitCriticalSection(void) {
 }
 
 #ifdef __cplusplus
