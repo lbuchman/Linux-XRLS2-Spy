@@ -57,12 +57,14 @@ int main(int argc, char **argv) {
     Srxl2Bus srxl2Bus(uart);
     Srxl2Servo elerons("elerons", 0x60, 2, true, 14);
     Srxl2Servo rudder("rudder", 0x61, 3, true, 15);
-    Srxl2Servo elevator("elevator", 0x62, 3, true, 16);
+    Srxl2Servo elevator("elevator", 0x62, 3, false, 16);
     Srxl2Servo flaps("flaps", 0x63, 3, false, 17);
+    Srxl2Servo lights("flaps", 0x75, 3, false, 17);
     srxl2Bus.addDevice(elerons);
     srxl2Bus.addDevice(rudder);
     srxl2Bus.addDevice(elevator);
     srxl2Bus.addDevice(flaps);
+    srxl2Bus.addDevice(lights);
 
     while(true) {
 
