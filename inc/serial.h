@@ -44,9 +44,9 @@ class Stream {
 class _Serial: public Stream {
     public:
         _Serial() {};
-        char read() override {};
+        char read() override { return 0; };
         int printf(const char *format, ...) override {
-            va_list          args;
+            va_list args;
             va_start(args, format);
             int ret = vprintf(format, args);
             va_end(args);
