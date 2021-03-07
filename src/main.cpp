@@ -14,6 +14,8 @@
 
 using namespace std;
 
+static SerialTerminal serialTerminal;
+
 int main(int argc, char **argv) {
     int baudrate = 115200;
     char deviceFile[32] = "/dev/ttyACM0";
@@ -67,9 +69,16 @@ int main(int argc, char **argv) {
     srxl2Bus.addDevice(flaps);
     srxl2Bus.addDevice(lights);
 
+    serialTerminal.begin(&Serial);
+    serialTerminal.cmdAdd("pvt", "display GPS PVT data", [](int arg_cnt, char **args) -> void {
+
+    });
+    
+    
     while(true) {
 
         srxl2Bus.run();
+        serialTerminal.cmdPoll();
     }
 
     // uartClose(uart);

@@ -36,7 +36,7 @@ SOFTWARE.
 class Stream {
     public:
          Stream() {};
-         int available() {};
+         int available() { return 0; };
          virtual int printf(const char *format, ...) = 0;
          virtual char read() = 0;
 };
