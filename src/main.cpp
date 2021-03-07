@@ -10,6 +10,7 @@
 #include "loggingLib/log.h"
 #include "SRXL2/srxl2Bus.h"
 #include "SRXL2/srxl2Servo.h"
+#include "CmdArduino/Cmd.h"
 
 using namespace std;
 
