@@ -26,14 +26,15 @@ Scheduler ts;
 
 int main(int argc, char **argv) {
     int baudrate = 115200;
-    char deviceFile[32] = "/dev/ttyACM0";
+    char deviceFile[32] = "/dev/ttyS0";
+    char terminalDeviceFile[32] = "/dev/tnt1";
     printme(NEWLINE, TIMESTAMP, "SRXL2 Spy Linux Rev 0.1");
 
     int c;
 
     opterr = 0;
 
-    while((c = getopt(argc, argv, "p:b:h")) != -1) {
+    while((c = getopt(argc, argv, "t:p:b:h")) != -1) {
         switch(c) {
             case 'b':
                 baudrate = std::stoi(optarg);
@@ -43,6 +44,10 @@ int main(int argc, char **argv) {
                 strcpy(deviceFile, optarg);
                 break;
 
+            case 't':
+                strcpy(terminalDeviceFile, optarg);
+                break;
+                
             case 'h':
                 fprintf(stderr, "usage: %s -b baudrate -p portDevice\n", argv[0]);
                 break;
@@ -55,9 +60,9 @@ int main(int argc, char **argv) {
         }
     }
 #ifdef CmdArduino
-    Serial.begin(115200);
+    Serial.begin(baudrate);
 #else
-   Serial.begin((char*)"/dev/tnt1", 115200);
+   Serial.begin(terminalDeviceFile, baudrate);
 #endif
 
     Serial.printf("starting serial device %s at baudrate %d\n", deviceFile, baudrate);
@@ -86,7 +91,13 @@ int main(int argc, char **argv) {
 
     });
     
+   serialTerminal.cmdAdd("list", "list device", [](int arg_cnt, char **args) -> void {
+
+    });
     
+    serialTerminal.cmdAdd("help", "display help", [](int arg_cnt, char **args) -> void {
+        serialTerminal.help();
+    });
     while(true) {
 
         srxl2Bus.run();
