@@ -56,7 +56,7 @@ uint64_t getElapseTime() {
     @return elepsed time in uSec
 */
 unsigned long millis() {
-    return getElapseTime();     
+    return getElapseTime() / 1000;     
 }
 /**
     @brief  reset  elapsed time

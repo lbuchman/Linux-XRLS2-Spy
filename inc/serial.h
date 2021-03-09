@@ -24,6 +24,7 @@ SOFTWARE.
 #ifndef __SERIALL_H__
 #define __SERIALL_H__
 
+#ifndef ARDUINO
 #include <cstdint>
 #include <stdio.h>
 #include <stdarg.h>
@@ -33,7 +34,7 @@ SOFTWARE.
 #include <unistd.h>
 #include "uart.h"
 
-#ifndef ARDUINO
+
 
 class Stream {
     public:

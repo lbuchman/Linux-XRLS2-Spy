@@ -27,7 +27,7 @@ https://sourceforge.net/projects/tty0tty/files/
 #include <linux/sched/signal.h>
 #endif
 */
-
+#ifndef ARDUINO
 // C library headers
 #include <serial.h>
 
@@ -56,3 +56,4 @@ int Stream::available()
     if (ret < 1) return 0;
     return ret;
 };
+#endif

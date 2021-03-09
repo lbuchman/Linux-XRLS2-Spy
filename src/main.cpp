@@ -16,7 +16,13 @@
 using namespace std;
 
 static SerialTerminal serialTerminal;
-Scheduler ts;
+static Scheduler ts;
+static Srxl2Bus srxl2Bus;
+static Srxl2Servo elerons{"elerons", 0x60, kChannnel2, true, 14};
+static Srxl2Servo rudder{"rudder", 0x61, kChannnel4, true, 15};
+static Srxl2Servo elevator{"elevator", 0x62, kChannnel3, false, 16};
+static Srxl2Servo flaps{"flaps", 0x63, kChannnel6, false, 17};
+static Srxl2Servo lights{"flaps", 0x75, kChannnel5, false, 17};
 
 /*
  * 
@@ -26,7 +32,7 @@ Scheduler ts;
 
 int main(int argc, char **argv) {
     int baudrate = 115200;
-    char deviceFile[32] = "/dev/ttyS0";
+    char deviceFile[32] = "/dev/tnt3";
     char terminalDeviceFile[32] = "/dev/tnt1";
     printme(NEWLINE, TIMESTAMP, "SRXL2 Spy Linux Rev 0.1");
 
@@ -65,21 +71,12 @@ int main(int argc, char **argv) {
    Serial.begin(terminalDeviceFile, baudrate);
 #endif
 
-    Serial.printf("starting serial device %s at baudrate %d\n", deviceFile, baudrate);
-
-
     int8_t uart = uartInit(deviceFile, baudrate);
 
     if(uart < 0) {
         return -1;
     }
-
-    Srxl2Bus srxl2Bus(uart);
-    Srxl2Servo elerons("elerons", 0x60, kChannnel2, true, 14);
-    Srxl2Servo rudder("rudder", 0x61, kChannnel4, true, 15);
-    Srxl2Servo elevator("elevator", 0x62, kChannnel3, false, 16);
-    Srxl2Servo flaps("flaps", 0x63, kChannnel6, false, 17);
-    Srxl2Servo lights("flaps", 0x75, kChannnel5, false, 17);
+    srxl2Bus.begin(uart);
     srxl2Bus.addDevice(elerons);
     srxl2Bus.addDevice(rudder);
     srxl2Bus.addDevice(elevator);
@@ -87,12 +84,9 @@ int main(int argc, char **argv) {
     srxl2Bus.addDevice(lights);
 
     serialTerminal.begin(&Serial);
-    serialTerminal.cmdAdd("pvt", "display GPS PVT data", [](int arg_cnt, char **args) -> void {
-
-    });
     
-   serialTerminal.cmdAdd("list", "list device", [](int arg_cnt, char **args) -> void {
-
+    serialTerminal.cmdAdd("list", "list devices", [](int arg_cnt, char **args) -> void {
+        srxl2Bus.listDevices();
     });
     
     serialTerminal.cmdAdd("help", "display help", [](int arg_cnt, char **args) -> void {
