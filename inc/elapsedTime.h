@@ -34,6 +34,7 @@ extern "C"
 
 uint64_t getElapseTime();
 void resetElapseTime();
+unsigned long millis();
 
 #ifdef __cplusplus
 } // extern "C"

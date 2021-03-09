@@ -51,6 +51,14 @@ uint64_t getElapseTime() {
 }
 
 /**
+    @brief  get elapsed time since start up
+
+    @return elepsed time in uSec
+*/
+unsigned long millis() {
+    return getElapseTime();     
+}
+/**
     @brief  reset  elapsed time
 
     @return elepsed time in uSec

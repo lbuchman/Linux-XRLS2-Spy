@@ -11,10 +11,18 @@
 #include "SRXL2/srxl2Bus.h"
 #include "SRXL2/srxl2Servo.h"
 #include "CmdArduino/Cmd.h"
+#include "TaskScheduler/src/TaskScheduler.h"
 
 using namespace std;
 
 static SerialTerminal serialTerminal;
+Scheduler ts;
+
+/*
+ * 
+ * 
+ * 
+ */
 
 int main(int argc, char **argv) {
     int baudrate = 115200;
@@ -46,9 +54,13 @@ int main(int argc, char **argv) {
                 abort();
         }
     }
+#ifdef CmdArduino
+    Serial.begin(115200);
+#else
+   Serial.begin((char*)"/dev/tnt1", 115200);
+#endif
 
-    Serial.begin((char*)"/dev/tnt1", 115200);
-    // fprintf(stderr, "starting serial device %s at baudrate %d\n", deviceFile, baudrate);
+    Serial.printf("starting serial device %s at baudrate %d\n", deviceFile, baudrate);
 
 
     int8_t uart = uartInit(deviceFile, baudrate);
@@ -79,6 +91,7 @@ int main(int argc, char **argv) {
 
         srxl2Bus.run();
         serialTerminal.cmdPoll();
+        ts.execute();
     }
 
     // uartClose(uart);

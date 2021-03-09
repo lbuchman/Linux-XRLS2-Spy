@@ -11,7 +11,6 @@ project (sxrl2Spy)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s -Os -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s -std=gnu++17 -Os -Wall")
 

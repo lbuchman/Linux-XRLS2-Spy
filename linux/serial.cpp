@@ -52,8 +52,7 @@ int Stream::available()
     tv.tv_usec = 5;
     FD_ZERO ( &fds );
     FD_SET ( fd, &fds );
-    int selRet = select ( fd + 1, &fds, NULL, NULL, &tv );
-    if (selRet < 1) return 0;
-    int ret = FD_ISSET ( 0, &fds );
-    return selRet;
+    int ret = select ( fd + 1, &fds, NULL, NULL, &tv );
+    if (ret < 1) return 0;
+    return ret;
 };
