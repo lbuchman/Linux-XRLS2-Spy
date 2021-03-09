@@ -40,15 +40,15 @@ int main(int argc, char **argv) {
                 break;
 
             case '?':
-                fprintf(stderr, "invalid command line option %c\n", c);
+                fprintf(stderr, "invalid command line option %c\n\r", c);
 
             default:
                 abort();
         }
     }
 
-    fprintf(stderr, "starting serial device %s at baudrate %d\n", deviceFile, baudrate);
-
+    Serial.begin((char*)"/dev/tnt1", 115200);
+    // fprintf(stderr, "starting serial device %s at baudrate %d\n", deviceFile, baudrate);
 
 
     int8_t uart = uartInit(deviceFile, baudrate);

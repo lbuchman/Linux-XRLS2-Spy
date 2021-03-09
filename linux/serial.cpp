@@ -19,9 +19,41 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+/*
+https://sourceforge.net/projects/tty0tty/files/
+
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#include <linux/sched/signal.h>
+#endif
+*/
 
 // C library headers
 #include <serial.h>
 
-
 _Serial Serial;
+int readRaw ( int filedes, void *buf, size_t nbyte )
+{
+    return  read( filedes, buf, nbyte );
+}
+
+char Stream::read()
+{  
+    char ch;
+    readRaw(fd, &ch, 1);
+    return ch;
+}
+
+int Stream::available()
+{
+    struct timeval tv;
+    fd_set fds;
+    tv.tv_sec = 0;
+    tv.tv_usec = 5;
+    FD_ZERO ( &fds );
+    FD_SET ( fd, &fds );
+    int selRet = select ( fd + 1, &fds, NULL, NULL, &tv );
+    if (selRet < 1) return 0;
+    int ret = FD_ISSET ( 0, &fds );
+    return selRet;
+};

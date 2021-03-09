@@ -306,3 +306,21 @@ int8_t uartTransmit ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bytesToSend ) {
 
     return retval;
 }
+
+/**
+    @brief  get uart raw fd
+
+    @param  uart:           uart number
+    @return fd:         0 is OK, < 0 failure
+*/
+int uartGetFd(uint8_t uartNum) {
+    if ( uartNum > uarts.size() - 1 ) {
+        logme ( kLogError, LINEINFOFORMAT "Error invalid uart %i:  %s\n", LINEINFO, uartNum );
+        return -1;
+    }
+
+    int & serial_port = uarts.at ( uartNum );
+    
+    return serial_port;
+    
+}

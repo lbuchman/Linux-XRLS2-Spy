@@ -38,7 +38,7 @@ int8_t uartSetBaud(uint8_t uartNum, uint32_t baudRate);
 int8_t uartReceiveBytes(uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint8_t timeout_ms);
 int8_t uartReceive(uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint8_t timeout_ms);
 int8_t uartTransmit(uint8_t uartNum, uint8_t* pBuffer, uint8_t bytesToSend);
-
+int uartGetFd(uint8_t uartNum);
 // #ifdef __cplusplus
 // } // extern "C"
 // #endif

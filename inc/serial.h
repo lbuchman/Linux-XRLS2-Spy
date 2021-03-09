@@ -30,28 +30,40 @@ SOFTWARE.
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
- 
+#include <unistd.h>
+#include "uart.h"
+
 #ifndef ARDUINO
 
 class Stream {
     public:
          Stream() {};
-         int available() { return 0; };
+         int available();
          virtual int printf(const char *format, ...) = 0;
-         virtual char read() = 0;
+         virtual char read();
+    protected:
+         char chIn;
+         int fd = -1;
 };
 
 class _Serial: public Stream {
     public:
         _Serial() {};
-        char read() override { return 0; };
         int printf(const char *format, ...) override {
             va_list args;
             va_start(args, format);
-            int ret = vprintf(format, args);
+            int ret = vdprintf(fd, format, args);
             va_end(args);
             return ret;
         };
+        bool begin(char* device, const int baudRate) {
+            int8_t uart = uartInit (device, baudRate );
+            if (uart < 0) return false;
+            fd = uartGetFd(uart);
+            return true;
+        }
+    private:
+
 };
 
 extern _Serial Serial;
