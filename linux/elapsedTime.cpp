@@ -34,13 +34,13 @@ SOFTWARE.
 #include "elapsedTime.h"
 
 
-static uint64_t startTime = micros();
+static uint32_t startTime = micros();
 /**
     @brief  get elapsed time since start up
 
     @return elepsed time in uSec
 */
-unsigned long micros() {
+uint32_t micros() {
     
     struct timeval timeNow;
     
@@ -55,7 +55,7 @@ unsigned long micros() {
 
     @return elepsed time in uSec
 */
-unsigned long millis() {
+uint32_t millis() {
     return micros() / 1000;     
 }
 

@@ -26,22 +26,16 @@ SOFTWARE.
 
 #include <cstdint>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+
 
 #ifndef ARDUINO 
 
-unsigned long micros();
+uint32_t micros();
 void resetElapseTime();
-unsigned long millis();
-
+uint32_t millis();
+#else
+#include <Arduino.h>
 #endif
-#ifdef __cplusplus
-} // extern "C"
-#endif
-
 
 
 #endif //__SRXL_H__

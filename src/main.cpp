@@ -1,3 +1,4 @@
+#ifndef ARDUINO
 #include <string.h>
 #include <iostream>
 #include <ctype.h>
@@ -5,13 +6,45 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
-#include <uart.h>
+#endif
 
+#include <uart.h>
 #include "loggingLib/log.h"
 #include "SRXL2/srxl2Bus.h"
 #include "SRXL2/srxl2Servo.h"
 #include "CmdArduino/Cmd.h"
 #include "TaskScheduler/src/TaskScheduler.h"
+
+// cmake -DCMAKE_TOOLCHAIN_FILE=../arm-teensy-gnueabihf.cmake  -DHW=32 -DCMAKE_BUILD_TYPE=DEBUG ../
+
+#ifdef ARDUINO
+namespace std {
+  void __throw_bad_alloc()
+  {
+    Serial.println("Unable to allocate memory");
+    while(1);
+  }
+
+  void __throw_length_error( char const*e )
+  {
+    Serial.print("Length Error :");
+    Serial.println(e);
+    while(1);
+  }
+
+  void __throw_bad_function_call()
+  {
+    Serial.println("Bad function call!");
+    while(1);
+  }
+  
+  void __throw_out_of_range_fmt(const char*, ...)
+  {
+    Serial.println("Bad function call!");
+    while(1);
+  }
+}
+#endif
 
 using namespace std;
 
@@ -24,22 +57,62 @@ static Srxl2Servo elevator{"elevator", 0x62, kChannnel3, false, 16};
 static Srxl2Servo flaps{"flaps", 0x63, kChannnel6, false, 17};
 static Srxl2Servo lights{"flaps", 0x75, kChannnel5, false, 17};
 
+static int baudrate = 115200;
+static char deviceFile[32] = "/dev/tnt3";
+#ifndef ARDUINO
+static char terminalDeviceFile[32] = "/dev/tnt1";
+#endif
+
 /*
  * 
  * 
  * 
  */
+void setup() {
 
-int main(int argc, char **argv) {
-    int baudrate = 115200;
-    char deviceFile[32] = "/dev/tnt3";
-    char terminalDeviceFile[32] = "/dev/tnt1";
     printme(NEWLINE, TIMESTAMP, "SRXL2 Spy Linux Rev 0.1");
 
+  
+    
+#ifdef ARDUINO
+    Serial.begin(baudrate);
+#else
+   Serial.begin(terminalDeviceFile, baudrate);
+#endif
+
+    int8_t uart = uartInit(deviceFile, baudrate);
+
+    if(uart < 0) {
+        return;
+    }
+    srxl2Bus.begin(uart);
+    srxl2Bus.addDevice(elerons);
+    srxl2Bus.addDevice(rudder);
+    srxl2Bus.addDevice(elevator);
+    srxl2Bus.addDevice(flaps);
+    srxl2Bus.addDevice(lights);
+
+    serialTerminal.begin(&Serial);
+    
+    serialTerminal.cmdAdd("list", "list devices", [](int arg_cnt, char **args) -> void {
+        srxl2Bus.listDevices();
+    });
+    
+    serialTerminal.cmdAdd("help", "display help", [](int arg_cnt, char **args) -> void {
+        serialTerminal.help();
+    });
+}
+
+/*
+ * 
+ * 
+ */
+#ifndef ARDUINO
+int main(int argc, char **argv) {
     int c;
-
+    
     opterr = 0;
-
+    
     while((c = getopt(argc, argv, "t:p:b:h")) != -1) {
         switch(c) {
             case 'b':
@@ -65,42 +138,14 @@ int main(int argc, char **argv) {
                 abort();
         }
     }
-#ifdef CmdArduino
-    Serial.begin(baudrate);
+    setup();
 #else
-   Serial.begin(terminalDeviceFile, baudrate);
+void loop() {
 #endif
-
-    int8_t uart = uartInit(deviceFile, baudrate);
-
-    if(uart < 0) {
-        return -1;
-    }
-    srxl2Bus.begin(uart);
-    srxl2Bus.addDevice(elerons);
-    srxl2Bus.addDevice(rudder);
-    srxl2Bus.addDevice(elevator);
-    srxl2Bus.addDevice(flaps);
-    srxl2Bus.addDevice(lights);
-
-    serialTerminal.begin(&Serial);
-    
-    serialTerminal.cmdAdd("list", "list devices", [](int arg_cnt, char **args) -> void {
-        srxl2Bus.listDevices();
-    });
-    
-    serialTerminal.cmdAdd("help", "display help", [](int arg_cnt, char **args) -> void {
-        serialTerminal.help();
-    });
-    while(true) {
+while(true) {
 
         srxl2Bus.run();
         serialTerminal.cmdPoll();
         ts.execute();
     }
-
-    // uartClose(uart);
-    // printme(NEWLINE, NO_TIMESTAMP, "uart %s is closed", deviceFile);
-    // return 0;
-
 }
