@@ -27,21 +27,23 @@ SET(CROSS ${COMPILERPATH}/arm-none-eabi)
 SET(CMAKE_SYSROOT, ${TOOLSPATH}/arm)
 SET(TEENSY_ROOT ${TOOLSPATH}/arm)
 
-IF(${HW} MATCHES "32" OR NOT DEFINED ${HW})
-    SET(TEENSY_CORE_SPEED 96000000)
-    SET(TEENSY_TYPE teensy3)
-    SET (CORE_PATH ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE})
-    SET(c_flags -I${CORE_PATH}  -DARDUINO -nostdlib -fno-exceptions  -fstack-usage -DARDUINO_TEENSY32 -fsingle-precision-constant -D__MK20DX256__ -mcpu=cortex-m4 -mthumb -DF_CPU=${TEENSY_CORE_SPEED}  -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DTEENSYDUINO=150 -DHW=${HW} -ffunction-sections -fdata-sections)
-    SET(cxx_flags ${c_flags} -felide-constructors -fno-rtti)
-    
-    
-    add_compile_options(
-        "$<$<COMPILE_LANGUAGE:C>:${c_flags}>"
-         "$<$<COMPILE_LANGUAGE:CXX>:${cxx_flags}>"
-    )
-   
-    add_link_options(-T${CORE_PATH}/mk20dx256.ld -Wl,--gc-sections,--relax,--defsym=__rtc_localtime=1615322559  -mthumb -mcpu=cortex-m4 -fsingle-precision-constant -larm_cortexM4l_math)
-ENDIF(${HW} MATCHES "32")
+
+SET(TEENSY_CORE_SPEED 60000000)
+SET(TEENSY_TYPE teensy4)
+SET(CPU_FLAGS -ffunction-sections -fdata-sections -DARDUINO_TEENSY40 -D__IMXRT1062__ -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16 -DF_CPU=${TEENSY_CORE_SPEED})
+SET (CORE_PATH ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE})
+SET(c_flags -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DTEENSYDUINO=150 ${CPU_FLAGS} -I${CORE_PATH}  -DARDUINO -Iinc -nostdlib -fno-exceptions -fpermissive  -fno-threadsafe-statics  -Wno-error=narrowing -fstack-usage -DHW=${HW})
+SET(cxx_flags ${c_flags} -felide-constructors -fno-rtti)
+
+
+add_compile_options(
+    "$<$<COMPILE_LANGUAGE:C>:${c_flags}>"
+        "$<$<COMPILE_LANGUAGE:CXX>:${cxx_flags}>"
+)
+
+add_link_options(-Wl,--gc-sections,--relax -T${CORE_PATH}/imxrt1062.ld ${CPU_FLAGS})
+
+
  
  
 SET(CMAKE_C_COMPILER ${CROSS}-gcc)
