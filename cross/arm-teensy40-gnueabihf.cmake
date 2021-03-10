@@ -11,16 +11,19 @@
 
 #cmake -DRPI2=1 -DCMAKE_TOOLCHAIN_FILE=../arm-linux-gnueabihf.cmake ..
 
+CMAKE_MINIMUM_REQUIRED(VERSION 3.20) 
+
 SET(CMAKE_SYSTEM_NAME Linux)
 SET(CMAKE_SYSTEM_VERSION 1)# Define the cross compiler locations
 
 
-
+message(STATUS "Running cmake for Tennsy 4.0")
 
 SET(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_PROCESSOR arm)
 SET(CMAKE_CROSSCOMPILING 1)
-SET (ARDUINO_INST /home/lbuchman//arduino-ide)
+get_filename_component(ARDUINO_INST "~/arduino-ide" REALPATH BASE_DIR)
+message(STATUS ARDUINO-INST = ${ARDUINO_INST})
 SET(TOOLSPATH ${ARDUINO_INST}/hardware/tools)
 SET(COMPILERPATH  ${TOOLSPATH}/arm/bin)
 SET(CROSS ${COMPILERPATH}/arm-none-eabi)

@@ -4,7 +4,7 @@
 
 #cmake -DRPI2=1 -DCMAKE_TOOLCHAIN_FILE=../arm-linux-gnueabihf.cmake ..
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.20)
 set(PROJECT_NAME SRXL2_SPY)
 
 project (sxrl2Spy)
