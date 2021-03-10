@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
+#ifndef ARDUINO 
 // C library headers
 #include <stdio.h>
 
@@ -34,13 +34,13 @@ SOFTWARE.
 #include "elapsedTime.h"
 
 
-static uint64_t startTime = getElapseTime();
+static uint64_t startTime = micros();
 /**
     @brief  get elapsed time since start up
 
     @return elepsed time in uSec
 */
-uint64_t getElapseTime() {
+unsigned long micros() {
     
     struct timeval timeNow;
     
@@ -56,8 +56,9 @@ uint64_t getElapseTime() {
     @return elepsed time in uSec
 */
 unsigned long millis() {
-    return getElapseTime() / 1000;     
+    return micros() / 1000;     
 }
+
 /**
     @brief  reset  elapsed time
 
@@ -66,3 +67,5 @@ unsigned long millis() {
 void resetElapseTime() {
     
 }
+
+#endif

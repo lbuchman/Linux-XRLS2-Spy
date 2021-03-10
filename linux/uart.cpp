@@ -269,10 +269,10 @@ int8_t uartReceive ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint
 */
 int8_t uartReceiveBytes ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint8_t timeout_ms ) {
 
-    uint64_t timeoutAt = getElapseTime() + timeout_ms * 1000;
+    uint64_t timeoutAt = micros() + timeout_ms * 1000;
     int bytesReceived = 0;
 
-    while ((timeoutAt > getElapseTime()) && (bytesReceived < bufferSize)) {
+    while ((timeoutAt > micros()) && (bytesReceived < bufferSize)) {
         
         int ret = uartReceive (uartNum, &pBuffer[bytesReceived], bufferSize - bytesReceived, timeout_ms );
         if (ret) bytesReceived += ret;

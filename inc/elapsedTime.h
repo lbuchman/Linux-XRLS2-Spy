@@ -31,11 +31,13 @@ extern "C"
 {
 #endif
 
+#ifndef ARDUINO 
 
-uint64_t getElapseTime();
+unsigned long micros();
 void resetElapseTime();
 unsigned long millis();
 
+#endif
 #ifdef __cplusplus
 } // extern "C"
 #endif
