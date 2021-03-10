@@ -32,6 +32,7 @@ file(GLOB_RECURSE target_source_h_files ${ARDUINO_INST}/hardware/teensy/avr/core
 
 ENDIF(${CMAKE_CROSSCOMPILING} MATCHES "1")
 
+message(STATUS "Running cmake for Tennsy ${TEENSY_VARIANT}")
 
 # Application files
 file(GLOB_RECURSE app_source_cpp_files ./src/*.cpp)

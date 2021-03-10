@@ -16,21 +16,19 @@ SET(CMAKE_SYSTEM_VERSION 1)# Define the cross compiler locations
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.20) 
 
-message(STATUS "Running cmake for Tennsy 3.2")
 
 SET(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_PROCESSOR arm)
 SET(CMAKE_CROSSCOMPILING 1)
 
 get_filename_component(ARDUINO_INST "~/arduino-ide" REALPATH BASE_DIR)
-message(STATUS ARDUINO-INST = ${ARDUINO_INST})
 
 SET(TOOLSPATH ${ARDUINO_INST}/hardware/tools)
 SET(COMPILERPATH  ${TOOLSPATH}/arm/bin)
 SET(CROSS ${COMPILERPATH}/arm-none-eabi)
 SET(CMAKE_SYSROOT, ${TOOLSPATH}/arm)
 SET(TEENSY_ROOT ${TOOLSPATH}/arm)
-
+SET(TEENSY_VARIANT teensy3.2)
 SET(TEENSY_CORE_SPEED 96000000)
 SET(TEENSY_TYPE teensy3)
 SET (CORE_PATH ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE})
@@ -40,7 +38,7 @@ SET(cxx_flags ${c_flags} -felide-constructors -fno-rtti)
 
 add_compile_options(
     "$<$<COMPILE_LANGUAGE:C>:${c_flags}>"
-        "$<$<COMPILE_LANGUAGE:CXX>:${cxx_flags}>"
+    "$<$<COMPILE_LANGUAGE:CXX>:${cxx_flags}>"
 )
 
 add_link_options(-T${CORE_PATH}/mk20dx256.ld -Wl,--gc-sections,--relax,--defsym=__rtc_localtime=1615322559  -mthumb -mcpu=cortex-m4 -fsingle-precision-constant -larm_cortexM4l_math)

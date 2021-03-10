@@ -17,20 +17,18 @@ SET(CMAKE_SYSTEM_NAME Linux)
 SET(CMAKE_SYSTEM_VERSION 1)# Define the cross compiler locations
 
 
-message(STATUS "Running cmake for Tennsy 4.0")
-
 SET(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_PROCESSOR arm)
 SET(CMAKE_CROSSCOMPILING 1)
 get_filename_component(ARDUINO_INST "~/arduino-ide" REALPATH BASE_DIR)
-message(STATUS ARDUINO-INST = ${ARDUINO_INST})
+
 SET(TOOLSPATH ${ARDUINO_INST}/hardware/tools)
 SET(COMPILERPATH  ${TOOLSPATH}/arm/bin)
 SET(CROSS ${COMPILERPATH}/arm-none-eabi)
 SET(CMAKE_SYSROOT, ${TOOLSPATH}/arm)
 SET(TEENSY_ROOT ${TOOLSPATH}/arm)
 
-
+SET(TEENSY_VARIANT teensy4.1)
 SET(TEENSY_CORE_SPEED 60000000)
 SET(TEENSY_TYPE teensy4)
 SET(CPU_FLAGS -ffunction-sections -fdata-sections -DARDUINO_TEENSY40 -D__IMXRT1062__ -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16 -DF_CPU=${TEENSY_CORE_SPEED})
@@ -41,7 +39,7 @@ SET(cxx_flags ${c_flags} -felide-constructors -fno-rtti)
 
 add_compile_options(
     "$<$<COMPILE_LANGUAGE:C>:${c_flags}>"
-        "$<$<COMPILE_LANGUAGE:CXX>:${cxx_flags}>"
+    "$<$<COMPILE_LANGUAGE:CXX>:${cxx_flags}>"
 )
 
 add_link_options(-Wl,--gc-sections,--relax -T${CORE_PATH}/imxrt1062.ld ${CPU_FLAGS})
