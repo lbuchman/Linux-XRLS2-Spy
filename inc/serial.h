@@ -38,13 +38,13 @@ SOFTWARE.
 
 class Stream {
     public:
-         Stream() {};
-         int available();
-         virtual int printf(const char *format, ...) = 0;
-         virtual char read();
+        Stream() {};
+        int available();
+        virtual int printf(const char *format, ...) = 0;
+        virtual char read();
     protected:
-         char chIn;
-         int fd = -1;
+        char chIn;
+        int fd = -1;
 };
 
 class _Serial: public Stream {
@@ -58,8 +58,12 @@ class _Serial: public Stream {
             return ret;
         };
         bool begin(char* device, const int baudRate) {
-            int8_t uart = uartInit (device, baudRate );
-            if (uart < 0) return false;
+            int8_t uart = uartInit(device, baudRate);
+
+            if(uart < 0) {
+                return false;
+            }
+
             fd = uartGetFd(uart);
             return true;
         }

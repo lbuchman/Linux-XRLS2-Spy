@@ -21,21 +21,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef __ELAPSEDTIME_H__
-#define __ELAPSEDTIME_H__
-
-#include <cstdint>
-
-
+#ifndef __INIT_H__
+#define __INIT_H__
 
 #ifndef ARDUINO
 
-uint32_t micros();
-void resetElapseTime();
-uint32_t millis();
-#else
-#include <Arduino.h>
+void loop(void);
+void setup();
+
 #endif
 
+void setUart(int8_t _uart);
 
-#endif //__SRXL_H__
+#endif //__SERIALL_H__
