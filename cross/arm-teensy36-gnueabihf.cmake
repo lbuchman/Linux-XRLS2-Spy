@@ -23,12 +23,14 @@ SET(CMAKE_CROSSCOMPILING 1)
 
 get_filename_component(ARDUINO_INST "~/arduino-ide" REALPATH BASE_DIR)
 
+
 SET(TOOLSPATH ${ARDUINO_INST}/hardware/tools)
 SET(COMPILERPATH  ${TOOLSPATH}/arm/bin)
 SET(CROSS ${COMPILERPATH}/arm-none-eabi)
 SET(CMAKE_SYSROOT, ${TOOLSPATH}/arm)
 SET(TEENSY_ROOT ${TOOLSPATH}/arm)
 SET(TEENSY_VARIANT teensy3.6)
+SET(MCU TEENSY36)
 SET(TEENSY_CORE_SPEED 180000000)
 SET(TEENSY_TYPE teensy3)
 SET(CPU_FLAGS  -fsingle-precision-constant -mfloat-abi=hard -mfpu=fpv4-sp-d16 -D__MK66FX1M0__  -DHW=${HW} -mcpu=cortex-m4 -mthumb -DF_CPU=${TEENSY_CORE_SPEED} -I${CORE_PATH} -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DTEENSYDUINO=150 -ffunction-sections -fdata-sections) 
@@ -45,7 +47,8 @@ add_compile_options(
 
 add_link_options(-Wl,--gc-sections,--relax -T${CORE_PATH}/mk66fx1m0.ld ${CPU_FLAGS} -larm_cortexM4l_math)
 
- 
+SET(OBJCOPY ${CROSS}-objcopy) 
+set(SIZE ${CROSS}-size) 
 SET(CMAKE_C_COMPILER ${CROSS}-gcc)
 SET(CMAKE_CXX_COMPILER ${CROSS}-gcc)
 # Define the sysroot path for the RaspberryPi distribution in our tools folder 

@@ -31,10 +31,11 @@ SET(TEENSY_ROOT ${TOOLSPATH}/arm)
 SET(TEENSY_VARIANT teensy4.1)
 SET(TEENSY_CORE_SPEED 60000000)
 SET(TEENSY_TYPE teensy4)
+SET(MCU TEENSY41)
 SET(CPU_FLAGS -ffunction-sections -fdata-sections -DARDUINO_TEENSY41 -D__IMXRT1062__ -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16 -DF_CPU=${TEENSY_CORE_SPEED})
 SET (CORE_PATH ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE})
-SET(c_flags -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DTEENSYDUINO=150 ${CPU_FLAGS} -I${CORE_PATH}  -DARDUINO -Iinc -nostdlib -fno-exceptions -fpermissive  -fno-threadsafe-statics  -Wno-error=narrowing -fstack-usage -DHW=${HW})
-SET(cxx_flags ${c_flags} -felide-constructors -fno-rtti)
+SET(c_flags -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DTEENSYDUINO=150 ${CPU_FLAGS} -I${CORE_PATH}  -DARDUINO -Iinc -nostdlib -fno-exceptions   -Wno-error=narrowing -fstack-usage -DHW=${HW})
+SET(cxx_flags ${c_flags} -felide-constructors -fno-rtti -fpermissive  -fno-threadsafe-statics)
 
 
 add_compile_options(
@@ -44,6 +45,8 @@ add_compile_options(
 
 add_link_options(-Wl,--gc-sections,--relax -T${CORE_PATH}/imxrt1062_t41.ld ${CPU_FLAGS})
 
+SET(OBJCOPY ${CROSS}-objcopy) 
+set(SIZE  ${CROSS}-size) 
 SET(CMAKE_C_COMPILER ${CROSS}-gcc)
 SET(CMAKE_CXX_COMPILER ${CROSS}-gcc)
 # Define the sysroot path for the RaspberryPi distribution in our tools folder 

@@ -31,6 +31,7 @@ SET(TEENSY_ROOT ${TOOLSPATH}/arm)
 SET(TEENSY_VARIANT teensy3.2)
 SET(TEENSY_CORE_SPEED 96000000)
 SET(TEENSY_TYPE teensy3)
+SET(MCU TEENSY32)
 SET (CORE_PATH ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE})
 SET(c_flags -I${CORE_PATH}  -DARDUINO -nostdlib -fno-exceptions  -fstack-usage -DARDUINO_TEENSY32 -fsingle-precision-constant -D__MK20DX256__ -mcpu=cortex-m4 -mthumb -DF_CPU=${TEENSY_CORE_SPEED}  -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DTEENSYDUINO=150 -DHW=${HW} -ffunction-sections -fdata-sections)
 SET(cxx_flags ${c_flags} -felide-constructors -fno-rtti)
@@ -43,9 +44,8 @@ add_compile_options(
 
 add_link_options(-T${CORE_PATH}/mk20dx256.ld -Wl,--gc-sections,--relax,--defsym=__rtc_localtime=1615322559  -mthumb -mcpu=cortex-m4 -fsingle-precision-constant -larm_cortexM4l_math)
 
-
- 
- 
+SET(OBJCOPY ${CROSS}-objcopy) 
+set(SIZE ${CROSS}-size)  
 SET(CMAKE_C_COMPILER ${CROSS}-gcc)
 SET(CMAKE_CXX_COMPILER ${CROSS}-gcc)
 # Define the sysroot path for the RaspberryPi distribution in our tools folder 
