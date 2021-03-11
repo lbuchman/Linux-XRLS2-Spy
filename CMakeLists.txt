@@ -54,3 +54,11 @@ target_link_libraries(${PROJECT_NAME}
      pthread
 )
 ENDIF(NOT ${CMAKE_CROSSCOMPILING} MATCHES "1")
+
+ 
+add_custom_target(format
+    COMMAND
+        ../format.sh
+    VERBATIM
+)
+
