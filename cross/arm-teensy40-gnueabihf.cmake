@@ -25,29 +25,39 @@ get_filename_component(ARDUINO_INST "~/arduino-ide" REALPATH BASE_DIR)
 SET(TOOLSPATH ${ARDUINO_INST}/hardware/tools)
 SET(COMPILERPATH  ${TOOLSPATH}/arm/bin)
 SET(CROSS ${COMPILERPATH}/arm-none-eabi)
-SET(CMAKE_SYSROOT, ${TOOLSPATH}/arm)
-SET(TEENSY_ROOT ${TOOLSPATH}/arm)
+#SET(CMAKE_SYSROOT, ${TOOLSPATH}/arm)
+#SET(TEENSY_ROOT ${TOOLSPATH}/arm)
+SET (CORE_PATH ${ARDUINO_INST}/hardware/teensy/avr/cores/teensy4)
 
 
-SET(TEENSY_VARIANT teensy4.0)
-SET(TEENSY_CORE_SPEED 60000000)
-SET(TEENSY_TYPE teensy4)
-SET(MCU TEENSY40)
-SET(CPU_FLAGS -ffunction-sections -fdata-sections -DARDUINO_TEENSY40 -D__IMXRT1062__ -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16 -DF_CPU=${TEENSY_CORE_SPEED})
-SET (CORE_PATH ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE})
-SET(c_flags -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DTEENSYDUINO=150 ${CPU_FLAGS} -I${CORE_PATH}  -DARDUINO -Iinc -nostdlib -fno-exceptions -fpermissive  -fno-threadsafe-statics  -Wno-error=narrowing -fstack-usage -DHW=${HW})
-SET(cxx_flags ${c_flags} -felide-constructors -fno-rtti)
+SET(MCU IMXRT1062)
+SET(MCU_LD ${CORE_PATH}/imxrt1062.ld)
+SET(MCU_DEF ARDUINO_TEENSY40)
+
+SET(OPTIONS -DF_CPU=600000000 -DUSB_SERIAL -DLAYOUT_US_ENGLISH -D__${MCU}__ -DARDUINO=10813 -DTEENSYDUINO=154 -D${MCU_DEF})
+SET(CPUOPTIONS  -mcpu=cortex-m7 -mfloat-abi=hard -mfpu=fpv5-d16 -mthumb)
+
+
+
+SET(CPPFLAGS ${CPUOPTIONS} ${OPTIONS} -ffunction-sections -fdata-sections -DHW=41 -I${CORE_PATH})
+SET(CXXFLAGS ${CPPFLAGS} -felide-constructors -fno-exceptions -fpermissive -fno-rtti -Wno-error=narrowing)
+
+# linker options
+SET(LDFLAGS -Wl,--gc-sections,--relax ${SPECS} ${CPUOPTIONS} -T${MCU_LD})
+
+# additional libraries to link
+SET(LIBS -lteensy40 )
 
 
 add_compile_options(
-    "$<$<COMPILE_LANGUAGE:C>:${c_flags}>"
-    "$<$<COMPILE_LANGUAGE:CXX>:${cxx_flags}>"
+    "$<$<COMPILE_LANGUAGE:C>:${CPPFLAGS}>"
+    "$<$<COMPILE_LANGUAGE:CXX>:${CXXFLAGS}>"
 )
 
-add_link_options(-Wl,--gc-sections,--relax -T${CORE_PATH}/imxrt1062.ld ${CPU_FLAGS})
+add_link_options(${LDFLAGS} ${LIBS})
 
 SET(OBJCOPY ${CROSS}-objcopy) 
-set(SIZE ${CROSS}-size)  
+set(SIZE  ${CROSS}-size) 
 SET(CMAKE_C_COMPILER ${CROSS}-gcc)
 SET(CMAKE_CXX_COMPILER ${CROSS}-gcc)
 # Define the sysroot path for the RaspberryPi distribution in our tools folder 

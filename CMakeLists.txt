@@ -24,10 +24,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 IF(${CMAKE_CROSSCOMPILING} MATCHES "1")
 message(STATUS -----------------------------Cross Compiling --------------------)
-file(GLOB_RECURSE target_source_cpp_files ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE}/*.cpp)
-file(GLOB_RECURSE target_source_c_files ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE}/*.c)
-file(GLOB_RECURSE target_source_h_files ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE}/*.h)
-message(STATUS "Running cmake for Tensy ${TEENSY_VARIANT}")
+#file(GLOB_RECURSE target_source_cpp_files ${CORE_PATH}/*.cpp)
+#file(GLOB_RECURSE target_source_c_files ${CORE_PATH}/hardware/teensy/avr/cores/${TEENSY_TYPE}/*.c)
+#file(GLOB_RECURSE target_source_h_files ${CORE_PATH}/hardware/teensy/avr/cores/${TEENSY_TYPE}/*.h)
+message(STATUS "Running cmake for Tensy ${MCU_DEF}")
 ELSE()
 SET(OBJCOPY objcopy) 
 ENDIF(${CMAKE_CROSSCOMPILING} MATCHES "1")
@@ -130,6 +130,9 @@ target_link_libraries(${PROJECT_NAME}
 )
 ELSE()
 target_link_libraries(${PROJECT_NAME}
+     arm_cortexM7lfsp_math
+     stdc++ 
+     teensy40
      m
 )
 ENDIF(NOT ${CMAKE_CROSSCOMPILING} MATCHES "1")
@@ -164,9 +167,9 @@ add_custom_target(flash
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD 14
         CXX_STANDARD_REQUIRED YES
-        CXX_EXTENSIONS NO
+        CXX_EXTENSIONS YES
 )
 
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")

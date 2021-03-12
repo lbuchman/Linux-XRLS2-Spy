@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <getopt.h>
+#include <string.h>
 #else
 #include <Arduino.h>
 #endif
@@ -25,20 +27,20 @@
 #ifdef ARDUINO
 namespace std {
 void __throw_bad_alloc() {
-    Serial.println("Unable to allocate memory");
+    // Serial.println("Unable to allocate memory");
 
     while(1);
 }
 
 void __throw_length_error(char const*e) {
-    Serial.print("Length Error :");
-    Serial.println(e);
+    // Serial.print("Length Error :");
+    // Serial.println(e);
 
     while(1);
 }
 
 void __throw_bad_function_call() {
-    Serial.println("Bad function call!");
+    // Serial.println("Bad function call!");
 
     while(1);
 }
@@ -53,20 +55,20 @@ void __throw_out_of_range_fmt(const char*, ...) {
 
 using namespace std;
 
+#ifndef ARDUINO 
 
-#ifndef ARDUINO
-static int baudrate = 115200;
 static char deviceFile[32] = "/dev/ttyACM0";
 static char terminalDeviceFile[32] = "/dev/ttyUSB11";
 #endif
 
-
+static int baudrate = 115200;
 /*
  *
  *
  */
-#ifndef ARDUINO
+
 int main(int argc, char **argv) {
+#ifndef ARDUINO
     int c;
 
     opterr = 0;
@@ -74,7 +76,7 @@ int main(int argc, char **argv) {
     while((c = getopt(argc, argv, "t:p:b:h")) != -1) {
         switch(c) {
             case 'b':
-                baudrate = std::stoi(optarg);
+                baudrate = stoi(optarg);
                 break;
 
             case 'p':
@@ -101,9 +103,14 @@ int main(int argc, char **argv) {
     Serial.begin(terminalDeviceFile, baudrate);
     int8_t uart = uartInit(deviceFile, baudrate);
     setUart(uart);
+#else
+    Serial.begin(baudrate);
+
+#endif
+
     setup();
     loop();
 }
-#endif
+
 
 

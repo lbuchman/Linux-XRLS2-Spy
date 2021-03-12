@@ -30,3 +30,30 @@ SUBSYSTEM=="tty", KERNEL=="tnt7", GROUP="dialout", MODE="0660"
 
 
 
+# Core Libs
+
+For a given core
+
+got to /home/lbuchman/arduino-1.8.13/hardware/teensy/avr/cores/
+
+teensy4/
+
+teensy3/
+
+
+
+For each board build libs based on the Makefile there
+
+Delete main.cpp
+
+put  libteensy40.a files libteensy41.a into    /home/lbuchman/arduino-1.8.13/hardware/tools/arm/arm-none-eabi/lib/armv7e-m/
+
+put  libteensy32.a files libteensy36.a into    /home/lbuchman/arduino-1.8.13/hardware/tools/arm/arm-none-eabi/lib/armv7e-m/
+
+add to CPPFLAGS -s to Makefile
+
+$(TARGET).a: $(OBJS) $(MCU_LD)
+	$(AR) rcs $@ $^
+
+AR = $(COMPILERPATH)/arm-none-eabi-gcc-ar
+
