@@ -16,22 +16,8 @@ project (sxrl2Spy)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-#set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s -Os -Wall")
-#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s -std=gnu++17 -Os -Wall")
-
-#set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -O0 -Wall -g")
-#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -std=gnu++17 -O0 -g -Wall")
-
-
 SET(MY_DEBUG_OPTIONS -O0 -Wall)
 SET(MY_RELEASE_OPTIONS  -s -Os -Wall)
-
-
-
-
-#target_compile_options(foo PUBLIC "$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
-#target_compile_options(foo PUBLIC "$<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>")
-
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
@@ -45,8 +31,6 @@ message(STATUS "Running cmake for Tensy ${TEENSY_VARIANT}")
 ELSE()
 SET(OBJCOPY objcopy) 
 ENDIF(${CMAKE_CROSSCOMPILING} MATCHES "1")
-
-SET(OBJCOPY ${CROSS}-objcopy) 
 
 # Application files
 
