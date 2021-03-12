@@ -45,7 +45,7 @@ SET(CXXFLAGS ${CPPFLAGS} -felide-constructors -fno-exceptions -fpermissive -fno-
 # linker options
 SET(LDFLAGS -Wl,--gc-sections,--relax ${SPECS} ${CPUOPTIONS} -T${MCU_LD})
 
-# additional libraries to link
+#without this cmake will not pass test compile
 SET(LIBS -lteensy40 )
 
 
