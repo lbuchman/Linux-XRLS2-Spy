@@ -11,41 +11,55 @@
 
 #cmake -DRPI2=1 -DCMAKE_TOOLCHAIN_FILE=../arm-linux-gnueabihf.cmake ..
 
+CMAKE_MINIMUM_REQUIRED(VERSION 3.20) 
+
 SET(CMAKE_SYSTEM_NAME Linux)
 SET(CMAKE_SYSTEM_VERSION 1)# Define the cross compiler locations
-
-CMAKE_MINIMUM_REQUIRED(VERSION 3.20) 
 
 
 SET(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_PROCESSOR arm)
 SET(CMAKE_CROSSCOMPILING 1)
-
 get_filename_component(ARDUINO_INST "~/arduino-ide" REALPATH BASE_DIR)
 
 SET(TOOLSPATH ${ARDUINO_INST}/hardware/tools)
 SET(COMPILERPATH  ${TOOLSPATH}/arm/bin)
 SET(CROSS ${COMPILERPATH}/arm-none-eabi)
-SET(CMAKE_SYSROOT, ${TOOLSPATH}/arm)
-SET(TEENSY_ROOT ${TOOLSPATH}/arm)
-SET(TEENSY_VARIANT teensy3.2)
-SET(TEENSY_CORE_SPEED 96000000)
-SET(TEENSY_TYPE teensy3)
-SET(MCU TEENSY32)
-SET (CORE_PATH ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE})
-SET(c_flags -I${CORE_PATH}  -DARDUINO -nostdlib -fno-exceptions  -fstack-usage -DARDUINO_TEENSY32 -fsingle-precision-constant -D__MK20DX256__ -mcpu=cortex-m4 -mthumb -DF_CPU=${TEENSY_CORE_SPEED}  -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DTEENSYDUINO=150 -DHW=${HW} -ffunction-sections -fdata-sections)
-SET(cxx_flags ${c_flags} -felide-constructors -fno-rtti)
+#SET(CMAKE_SYSROOT, ${TOOLSPATH}/arm)
+#SET(TEENSY_ROOT ${TOOLSPATH}/arm)
+SET (CORE_PATH ${ARDUINO_INST}/hardware/teensy/avr/cores/teensy3)
+
+
+SET(MCU MK20DX256)
+SET(MCU_LD ${CORE_PATH}/mk20dx256.ld)
+SET(MCU_DEF ARDUINO_TEENSY32)
+SET(teensyStaticLib teensy32)
+
+SET(OPTIONS -D__${MCU}__ -DARDUINO=10805 -DTEENSYDUINO=144 -DF_CPU=48000000 -DUSB_SERIAL -DLAYOUT_US_ENGLISH)
+SET(CPUOPTIONS  -mcpu=cortex-m4 -mthumb)
+
+
+
+SET(CPPFLAGS ${CPUOPTIONS} ${OPTIONS} -ffunction-sections -fdata-sections -DHW=32 -I${CORE_PATH})
+SET(CXXFLAGS ${CPPFLAGS} -felide-constructors -fno-exceptions -fpermissive -fno-rtti -Wno-error=narrowing)
+
+# linker options
+SET(LDFLAGS -Wl,--gc-sections,--defsym=__rtc_localtime=0 ${SPECS} ${CPUOPTIONS} -T${MCU_LD} --specs=nano.specs)
+
+#without this cmake will not pass test compile
+SET(LIBS -l${teensyStaticLib})
+
 
 
 add_compile_options(
-    "$<$<COMPILE_LANGUAGE:C>:${c_flags}>"
-    "$<$<COMPILE_LANGUAGE:CXX>:${cxx_flags}>"
+    "$<$<COMPILE_LANGUAGE:C>:${CPPFLAGS}>"
+    "$<$<COMPILE_LANGUAGE:CXX>:${CXXFLAGS}>"
 )
 
-add_link_options(-T${CORE_PATH}/mk20dx256.ld -Wl,--gc-sections,--relax,--defsym=__rtc_localtime=1615322559  -mthumb -mcpu=cortex-m4 -fsingle-precision-constant -larm_cortexM4l_math)
+add_link_options(${LDFLAGS} ${LIBS})
 
 SET(OBJCOPY ${CROSS}-objcopy) 
-set(SIZE ${CROSS}-size)  
+set(SIZE  ${CROSS}-size) 
 SET(CMAKE_C_COMPILER ${CROSS}-gcc)
 SET(CMAKE_CXX_COMPILER ${CROSS}-gcc)
 # Define the sysroot path for the RaspberryPi distribution in our tools folder 

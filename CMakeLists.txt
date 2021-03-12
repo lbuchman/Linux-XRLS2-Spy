@@ -130,9 +130,9 @@ target_link_libraries(${PROJECT_NAME}
 )
 ELSE()
 target_link_libraries(${PROJECT_NAME}
-     arm_cortexM7lfsp_math
+     ${MATH_LIB}
      stdc++ 
-     teensy40
+     ${teensyStaticLib}
      m
 )
 ENDIF(NOT ${CMAKE_CROSSCOMPILING} MATCHES "1")

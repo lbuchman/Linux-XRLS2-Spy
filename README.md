@@ -46,11 +46,11 @@ For each board build libs based on the Makefile there
 
 Delete main.cpp
 
-put  libteensy40.a files libteensy41.a into    /home/lbuchman/arduino-1.8.13/hardware/tools/arm/arm-none-eabi/lib/armv7e-m/
+put  libteensy40.a files libteensy41.a   libteensy36.a into   /home/lbuchman/arduino-1.8.13/hardware/tools/arm/arm-none-eabi/lib/armv7e-m/fpu/
 
-put  libteensy32.a files libteensy36.a into    /home/lbuchman/arduino-1.8.13/hardware/tools/arm/arm-none-eabi/lib/armv7e-m/
+put  libteensy32.a  into    /home/lbuchman/arduino-1.8.13/hardware/tools/arm/arm-none-eabi/lib/armv7e-m/
 
-add to CPPFLAGS -s to Makefile
+add to CPPFLAGS -s to Makefile                  
 
 $(TARGET).a: $(OBJS) $(MCU_LD)
 	$(AR) rcs $@ $^

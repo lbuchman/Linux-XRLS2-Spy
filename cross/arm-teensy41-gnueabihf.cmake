@@ -33,6 +33,8 @@ SET (CORE_PATH ${ARDUINO_INST}/hardware/teensy/avr/cores/teensy4)
 SET(MCU IMXRT1062)
 SET(MCU_LD ${CORE_PATH}/imxrt1062_t41.ld)
 SET(MCU_DEF ARDUINO_TEENSY41)
+SET(teensyStaticLib teensy41)
+SET(MATH_LIB arm_cortexM7lfsp_math)
 
 SET(OPTIONS -DF_CPU=600000000 -DUSB_SERIAL -DLAYOUT_US_ENGLISH -D__${MCU}__ -DARDUINO=10813 -DTEENSYDUINO=154 -D${MCU_DEF})
 SET(CPUOPTIONS  -mcpu=cortex-m7 -mfloat-abi=hard -mfpu=fpv5-d16 -mthumb)
@@ -43,7 +45,7 @@ SET(CPPFLAGS ${CPUOPTIONS} ${OPTIONS} -ffunction-sections -fdata-sections -DHW=4
 SET(CXXFLAGS ${CPPFLAGS} -felide-constructors -fno-exceptions -fpermissive -fno-rtti -Wno-error=narrowing)
 
 # linker options
-SET(LDFLAGS -Wl,--gc-sections,--relax ${SPECS} ${CPUOPTIONS} -T${MCU_LD})
+SET(LDFLAGS -Wl,--gc-sections,--relax ${SPECS} ${CPUOPTIONS} -T${MCU_LD} --specs=nano.specs )
 
 #without this cmake will not pass test compile
 SET(LIBS -lteensy41)
