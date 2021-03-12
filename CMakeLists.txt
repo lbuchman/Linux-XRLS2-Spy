@@ -12,13 +12,28 @@ include(ExternalProject)
 
 project (sxrl2Spy)
 
+ 
+
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s -Os -Wall")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s -std=gnu++17 -Os -Wall")
+#set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s -Os -Wall")
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s -std=gnu++17 -Os -Wall")
 
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -O0 -Wall -g")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -std=gnu++17 -O0 -g -Wall")
+#set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -O0 -Wall -g")
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -std=gnu++17 -O0 -g -Wall")
+
+
+SET(MY_DEBUG_OPTIONS -O0 -Wall)
+SET(MY_RELEASE_OPTIONS  -s -Os -Wall)
+
+
+
+
+#target_compile_options(foo PUBLIC "$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
+#target_compile_options(foo PUBLIC "$<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>")
+
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 
 IF(${CMAKE_CROSSCOMPILING} MATCHES "1")
@@ -32,22 +47,95 @@ file(GLOB_RECURSE target_source_h_files ${ARDUINO_INST}/hardware/teensy/avr/core
 # by add_executable, add_library or add_custom_target in order to make them visible to make
 
 #https://dornerworks.com/blog/moving-embedded-projects-to-cmake/
-
+message(STATUS "Running cmake for Tensy ${TEENSY_VARIANT}")
 ENDIF(${CMAKE_CROSSCOMPILING} MATCHES "1")
 
-message(STATUS "Running cmake for Tennsy ${TEENSY_VARIANT}")
+
 
 # Application files
-file(GLOB_RECURSE app_source_cpp_files ./src/*.cpp)
-file(GLOB_RECURSE app_source_h_files ./inc/*.h)
-include_directories(./ ./inc ./extLib)
 
+
+ExternalProject_Add(
+    CmdArduino
+    GIT_REPOSITORY https://github.com/lbuchman/CmdArduino.git
+    GIT_TAG linuxSrxl2
+    PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/extLib/CmdArduino
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    UPDATE_COMMAND ""
+) 
+
+ExternalProject_Add(
+    loggingLib
+    GIT_REPOSITORY https://github.com/lbuchman/loggingLib.git
+    GIT_TAG platformIndependent
+    PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/extLib/loggingLib
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+) 
+
+ExternalProject_Add(
+    SimpleEvents
+    GIT_REPOSITORY https://github.com/lbuchman/SimpleEvents.git
+    GIT_TAG master
+    PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/extLib/SimpleEvents
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+) 
+
+ ExternalProject_Add(
+    TaskScheduler
+    GIT_REPOSITORY https://github.com/lbuchman/TaskScheduler.git
+    GIT_TAG main
+    PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/extLib/TaskScheduler
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+) 
+
+ExternalProject_Add(
+    SRXL2
+    GIT_REPOSITORY https://github.com/lbuchman/SRXL2.git
+    GIT_TAG master
+    PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/extLib/SRXL2
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+) 
+ExternalProject_Get_Property(SRXL2 source_dir)
+include_directories(${source_dir})
+file(GLOB_RECURSE libs_source_cpp_files ${source_dir}/*.cpp)
+ExternalProject_Get_Property(TaskScheduler source_dir)
+include_directories(${source_dir}/src)
+file(GLOB_RECURSE libs_source_cpp_files1 ${source_dir}/*.cpp)
+list(APPEND libs_source_cpp_files " ${libs_source_cpp_files1}")
+ExternalProject_Get_Property(SimpleEvents source_dir)
+include_directories(${source_dir})
+file(GLOB_RECURSE libs_source_cpp_files1 ${source_dir}/*.cpp)
+list(APPEND libs_source_cpp_files " ${libs_source_cpp_files1}")
+ExternalProject_Get_Property(loggingLib source_dir)
+include_directories(${source_dir})
+file(GLOB_RECURSE libs_source_cpp_files1  ${source_dir}/*.cpp)
+list(APPEND libs_source_cpp_files " ${libs_source_cpp_files1}")
+ExternalProject_Get_Property(CmdArduino source_dir)
+include_directories(${source_dir})
+file(GLOB_RECURSE libs_source_cpp_files1 ${source_dir}/*.cpp)
+
+
+list(APPEND libs_source_cpp_files " ${libs_source_cpp_files1}")
+message(STATUS ${libs_source_cpp_files})
+
+file(GLOB_RECURSE app_source_cpp_files ./src/*.cpp)
 # platform ctest_read_custom_files
 file(GLOB_RECURSE app_platform_cpp_files ./linux/*.cpp ./teensy/*.cpp)
 
 file(GLOB_RECURSE lib_cpp_files ./extLib/*.cpp)
 file(GLOB_RECURSE lib_source_h_files ./extLib/*.h)
 
+#message(FATAL_ERROR ${app_source_cpp_files})
 
 add_executable(${PROJECT_NAME} ${app_source_h_files} ${app_source_cpp_files}  ${app_source_h_files} ${app_platform_cpp_files} ${lib_cpp_files} ${lib_source_h_files} ${target_source_cpp_files} ${target_source_c_files} ${target_source_h_files})
 
@@ -89,59 +177,13 @@ add_custom_target(flash
     VERBATIM
 )
 
-ExternalProject_Add(
-    CmdArduino
-    GIT_REPOSITORY https://github.com/lbuchman/CmdArduino.git
-    GIT_TAG linuxSrxl2
-    PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/extLib/CmdArduino
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-) 
 
-ExternalProject_Add(
-    loggingLib
-    GIT_REPOSITORY https://github.com/lbuchman/loggingLib.git
-    GIT_TAG platformIndependent
-    PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/extLib/loggingLib
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-) 
+set_target_properties(${PROJECT_NAME}
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
+)
 
-ExternalProject_Add(
-    SimpleEvents
-    GIT_REPOSITORY https://github.com/lbuchman/SimpleEvents.git
-    GIT_TAG master
-    PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/extLib/SimpleEvents
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-) 
-
- ExternalProject_Add(
-    TaskScheduler
-    GIT_REPOSITORY https://github.com/arkhipenko/TaskScheduler.git
-    GIT_TAG master
-    PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/extLib/TaskScheduler
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-) 
-
-ExternalProject_Add(
-    SRXL2
-    GIT_REPOSITORY https://github.com/lbuchman/SRXL2.git
-    GIT_TAG main
-    PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/extLib/SRXL2
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-) 
-ExternalProject_Get_Property(SRXL2 source_dir)
-message(STATUS ${source_dir})
-ExternalProject_Get_Property(TaskScheduler source_dir)
-message(STATUS ${source_dir})
-ExternalProject_Get_Property(SimpleEvents source_dir)
-ExternalProject_Get_Property(loggingLib source_dir)
-ExternalProject_Get_Property(CmdArduino source_dir)
+target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>")
+target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>")

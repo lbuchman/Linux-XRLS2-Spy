@@ -28,7 +28,7 @@ SOFTWARE.
 #include <string.h>
 #include <vector>
 #include <uart.h>
-#include <loggingLib/log.h>
+#include <log.h>
 #include <elapsedTime.h>
 
 using namespace std;

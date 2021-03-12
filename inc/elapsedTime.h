@@ -30,9 +30,9 @@ SOFTWARE.
 
 #ifndef ARDUINO
 
-uint32_t micros();
+unsigned long micros();
 void resetElapseTime();
-uint32_t millis();
+unsigned long millis();
 #else
 #include <Arduino.h>
 #endif

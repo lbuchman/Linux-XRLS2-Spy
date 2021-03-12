@@ -14,13 +14,13 @@
 #include <serial.h>
 #include <uart.h>
 #include <init.h>
-#include "loggingLib/log.h"
-#include "SRXL2/srxl2Bus.h"
-#include "SRXL2/srxl2Servo.h"
-#include "CmdArduino/Cmd.h"
+#include <log.h>
+#include <srxl2Bus.h>
+#include <srxl2Servo.h>
+#include <Cmd.h>
 
 
-// cmake -DCMAKE_TOOLCHAIN_FILE=../arm-teensy-gnueabihf.cmake  -DHW=32 -DCMAKE_BUILD_TYPE=DEBUG ../
+//  cmake -DCMAKE_TOOLCHAIN_FILE=../arm-teensy-gnueabihf.cmake  -DHW=32 -DCMAKE_BUILD_TYPE=DEBUG ../
 
 #ifdef ARDUINO
 namespace std {
@@ -56,8 +56,8 @@ using namespace std;
 
 #ifndef ARDUINO
 static int baudrate = 115200;
-static char deviceFile[32] = "/dev/tnt3";
-static char terminalDeviceFile[32] = "/dev/tnt1";
+static char deviceFile[32] = "/dev/ttyACM0";
+static char terminalDeviceFile[32] = "/dev/ttyUSB11";
 #endif
 
 

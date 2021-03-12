@@ -39,7 +39,7 @@ SOFTWARE.
 #include <signal.h>
 
 #include <uart.h>
-#include <loggingLib/log.h>
+#include <log.h>
 #include <elapsedTime.h>
 
 using namespace std;
@@ -271,7 +271,7 @@ int8_t uartReceive ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint
 */
 int8_t uartReceiveBytes ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint8_t timeout_ms ) {
 
-    uint64_t timeoutAt = micros() + timeout_ms * 1000;
+    unsigned long timeoutAt = micros() + timeout_ms * 1000;
     int bytesReceived = 0;
 
     while ((timeoutAt > micros()) && (bytesReceived < bufferSize)) {

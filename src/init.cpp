@@ -10,11 +10,11 @@
 #include <cstdint>
 
 #include <uart.h>
-#include "loggingLib/log.h"
-#include "SRXL2/srxl2Bus.h"
-#include "SRXL2/srxl2Servo.h"
-#include "CmdArduino/Cmd.h"
-#include "TaskScheduler/src/TaskScheduler.h"
+#include "log.h"
+#include <srxl2Bus.h>
+#include "srxl2Servo.h"
+#include "Cmd.h"
+#include "TaskScheduler.h"
 
 // cmake -DCMAKE_TOOLCHAIN_FILE=../arm-teensy-gnueabihf.cmake  -DHW=32 -DCMAKE_BUILD_TYPE=DEBUG ../
 

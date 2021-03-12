@@ -40,13 +40,13 @@ static uint32_t startTime = micros();
 
     @return elepsed time in uSec
 */
-uint32_t micros() {
+unsigned long micros() {
     
     struct timeval timeNow;
     
     gettimeofday(&timeNow, NULL);
     
-    uint64_t ret = timeNow.tv_sec * 1000000 + timeNow.tv_usec  - startTime;
+    unsigned long ret = timeNow.tv_sec * 1000000 + timeNow.tv_usec  - startTime;
     return ret;
 }
 
@@ -55,7 +55,7 @@ uint32_t micros() {
 
     @return elepsed time in uSec
 */
-uint32_t millis() {
+unsigned long millis() {
     return micros() / 1000;     
 }
 
