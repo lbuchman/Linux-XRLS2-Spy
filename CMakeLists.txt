@@ -41,16 +41,12 @@ message(STATUS -----------------------------Cross Compiling --------------------
 file(GLOB_RECURSE target_source_cpp_files ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE}/*.cpp)
 file(GLOB_RECURSE target_source_c_files ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE}/*.c)
 file(GLOB_RECURSE target_source_h_files ${ARDUINO_INST}/hardware/teensy/avr/cores/${TEENSY_TYPE}/*.h)
-
-
-# add_custom_command does not create a new target. You have to define targets explicitly
-# by add_executable, add_library or add_custom_target in order to make them visible to make
-
-#https://dornerworks.com/blog/moving-embedded-projects-to-cmake/
 message(STATUS "Running cmake for Tensy ${TEENSY_VARIANT}")
+ELSE()
+SET(OBJCOPY objcopy) 
 ENDIF(${CMAKE_CROSSCOMPILING} MATCHES "1")
 
-
+SET(OBJCOPY ${CROSS}-objcopy) 
 
 # Application files
 
@@ -74,6 +70,7 @@ ExternalProject_Add(
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
+    UPDATE_COMMAND ""
 ) 
 
 ExternalProject_Add(
@@ -84,6 +81,7 @@ ExternalProject_Add(
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
+    UPDATE_COMMAND ""
 ) 
 
  ExternalProject_Add(
@@ -94,6 +92,7 @@ ExternalProject_Add(
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
+    UPDATE_COMMAND ""
 ) 
 
 ExternalProject_Add(
@@ -104,6 +103,7 @@ ExternalProject_Add(
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
+    UPDATE_COMMAND ""
 ) 
 ExternalProject_Get_Property(SRXL2 source_dir)
 include_directories(${source_dir})
