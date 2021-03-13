@@ -103,7 +103,6 @@ int main(int argc, char **argv) {
 
     Serial.begin(terminalDeviceFile, baudrate);
     uart = uartInit(deviceFile, baudrate);
-    setUart(uart);
 #else
     Serial.begin(baudrate);
 
