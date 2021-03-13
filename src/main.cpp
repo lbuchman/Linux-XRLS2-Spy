@@ -1,4 +1,10 @@
-#ifndef ARDUINO
+#ifdef ARDUINO
+//#include <Arduino.h>
+#endif
+
+// by taken off #include <iostream> => -100K in size
+
+//#ifndef ARDUINO
 #include <string.h>
 #include <iostream>
 #include <ctype.h>
@@ -8,9 +14,7 @@
 #include <getopt.h>
 #include <getopt.h>
 #include <string.h>
-#else
-#include <Arduino.h>
-#endif
+// #endif
 
 #include <cstdint>
 #include <serial.h>
@@ -21,33 +25,29 @@
 #include <srxl2Servo.h>
 #include <Cmd.h>
 
-
+ 
 //  cmake -DCMAKE_TOOLCHAIN_FILE=../arm-teensy-gnueabihf.cmake  -DHW=32 -DCMAKE_BUILD_TYPE=DEBUG ../
 
-#ifdef ARDUINO
+#ifdef ARDUINO_NOT_INCLUDE_THIS
 namespace std {
 void __throw_bad_alloc() {
-    // Serial.println("Unable to allocate memory");
-
+    Serial.println("Unable to allocate memory");
     while(1);
 }
 
 void __throw_length_error(char const*e) {
-    // Serial.print("Length Error :");
-    // Serial.println(e);
-
+    Serial.print("Length Error :");
+    Serial.println(e);
     while(1);
 }
 
 void __throw_bad_function_call() {
-    // Serial.println("Bad function call!");
-
+    Serial.println("Bad function call!");
     while(1);
 }
 
 void __throw_out_of_range_fmt(const char*, ...) {
     Serial.println("Bad function call!");
-
     while(1);
 }
 }
