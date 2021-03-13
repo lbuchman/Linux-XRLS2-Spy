@@ -48,12 +48,12 @@ void setUart(int8_t _uart) {
  *
  *
  */
-void setup() {
-
+int setupFw(int8_t _uart) {
+    uart = _uart;
     printme(NEWLINE, TIMESTAMP, "SRXL2 Spy Linux Rev 0.1");
 
     if(uart < 0) {
-        exit(1);
+        return  -1;
     }
 
 #ifdef ARDUINO
@@ -77,9 +77,11 @@ void setup() {
     serialTerminal.cmdAdd("help", "display help", [](int arg_cnt, char **args) -> void {
         serialTerminal.help();
     });
+    
+    return 0;
 }
 
-void loop() {
+void mainLoop() {
 
     while(true) {
         srxl2Bus.run();

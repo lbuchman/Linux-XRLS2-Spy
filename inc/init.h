@@ -24,13 +24,9 @@ SOFTWARE.
 #ifndef __INIT_H__
 #define __INIT_H__
 
-#ifndef ARDUINO
 
-void loop(void);
-void setup();
+void mainLoop();
+int setupFw(int8_t _uart);
 
-#endif
-
-void setUart(int8_t _uart);
 
 #endif //__SERIALL_H__

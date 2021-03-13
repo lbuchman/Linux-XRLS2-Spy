@@ -68,6 +68,7 @@ static int baudrate = 115200;
  */
 
 int main(int argc, char **argv) {
+    int8_t uart = -1;
 #ifndef ARDUINO
     int c;
 
@@ -101,15 +102,15 @@ int main(int argc, char **argv) {
 
 
     Serial.begin(terminalDeviceFile, baudrate);
-    int8_t uart = uartInit(deviceFile, baudrate);
+    uart = uartInit(deviceFile, baudrate);
     setUart(uart);
 #else
     Serial.begin(baudrate);
 
 #endif
 
-    setup();
-    loop();
+    setupFw(uart);
+    mainLoop();
 }
 
 
