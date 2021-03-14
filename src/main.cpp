@@ -4,7 +4,7 @@
 
 // by taken off #include <iostream> => -100K in size
 
-//#ifndef ARDUINO
+#ifndef ARDUINO
 #include <string.h>
 #include <iostream>
 #include <ctype.h>
@@ -14,7 +14,7 @@
 #include <getopt.h>
 #include <getopt.h>
 #include <string.h>
-// #endif
+#endif
 
 #include <cstdint>
 #include <serial.h>
@@ -28,7 +28,7 @@
 
 //  cmake -DCMAKE_TOOLCHAIN_FILE=../arm-teensy-gnueabihf.cmake  -DHW=32 -DCMAKE_BUILD_TYPE=DEBUG ../
 
-#ifdef ARDUINO_NOT_INCLUDE_THIS
+#ifdef ARDUINO
 namespace std {
 void __throw_bad_alloc() {
     Serial.println("Unable to allocate memory");

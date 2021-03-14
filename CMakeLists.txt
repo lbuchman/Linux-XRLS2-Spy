@@ -134,7 +134,7 @@ target_link_libraries(${PROJECT_NAME}
 ELSE()
 target_link_libraries(${PROJECT_NAME}
      ${MATH_LIB}
-     stdc++ 
+#     stdc++ 
      ${teensyStaticLib}
      m
 )
