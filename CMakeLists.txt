@@ -16,8 +16,7 @@ project (sxrl2Spy)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-SET(MY_DEBUG_OPTIONS -O0 -Wall)
-SET(MY_RELEASE_OPTIONS  -s -Os -Wall)
+
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
@@ -27,9 +26,13 @@ message(STATUS -----------------------------Cross Compiling --------------------
 #file(GLOB_RECURSE target_source_cpp_files ${CORE_PATH}/*.cpp)
 #file(GLOB_RECURSE target_source_c_files ${CORE_PATH}/hardware/teensy/avr/cores/${TEENSY_TYPE}/*.c)
 #file(GLOB_RECURSE target_source_h_files ${CORE_PATH}/hardware/teensy/avr/cores/${TEENSY_TYPE}/*.h)
+SET(MY_DEBUG_OPTIONS -O0 -Wall  -I${CORE_PATH})
+SET(MY_RELEASE_OPTIONS  -s -Os -Wall -I${CORE_PATH})
 message(STATUS "Running cmake for Tensy ${MCU_DEF}")
 ELSE()
 SET(OBJCOPY objcopy) 
+SET(MY_DEBUG_OPTIONS -O0 -Wall)
+SET(MY_RELEASE_OPTIONS  -s -Os -Wall)
 ENDIF(${CMAKE_CROSSCOMPILING} MATCHES "1")
 
 # Application files

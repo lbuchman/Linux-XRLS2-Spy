@@ -1,5 +1,5 @@
 #ifdef ARDUINO
-//#include <Arduino.h>
+#include <Arduino.h>
 #endif
 
 // by taken off #include <iostream> => -100K in size
@@ -25,29 +25,33 @@
 #include <srxl2Servo.h>
 #include <Cmd.h>
 
- 
+
 //  cmake -DCMAKE_TOOLCHAIN_FILE=../arm-teensy-gnueabihf.cmake  -DHW=32 -DCMAKE_BUILD_TYPE=DEBUG ../
 
 #ifdef ARDUINO_NOT_INCLUDE_THIS
 namespace std {
 void __throw_bad_alloc() {
     Serial.println("Unable to allocate memory");
+
     while(1);
 }
 
 void __throw_length_error(char const*e) {
     Serial.print("Length Error :");
     Serial.println(e);
+
     while(1);
 }
 
 void __throw_bad_function_call() {
     Serial.println("Bad function call!");
+
     while(1);
 }
 
 void __throw_out_of_range_fmt(const char*, ...) {
     Serial.println("Bad function call!");
+
     while(1);
 }
 }
@@ -55,7 +59,7 @@ void __throw_out_of_range_fmt(const char*, ...) {
 
 using namespace std;
 
-#ifndef ARDUINO 
+#ifndef ARDUINO
 
 static char deviceFile[32] = "/dev/ttyACM0";
 static char terminalDeviceFile[32] = "/dev/ttyUSB11";
@@ -105,7 +109,9 @@ int main(int argc, char **argv) {
     uart = uartInit(deviceFile, baudrate);
 #else
     Serial.begin(baudrate);
-
+    while (!Serial);
+    Serial.println("I am here");
+    uart = uartInit("Serial1", baudrate);
 #endif
 
     setupFw(uart);

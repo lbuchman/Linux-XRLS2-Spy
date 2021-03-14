@@ -100,7 +100,7 @@ int8_t uartInit ( const char* device, const int baudRate ) {
     int serial_port = open ( device, O_RDWR | O_EXCL | O_NDELAY | O_NOCTTY );
 
     if ( serial_port < 0 ) {
-        logme ( kLogError, LINEINFOFORMAT "Error %i from open():  %s, device %s\n", LINEINFO, errno, strerror ( errno ), device );
+        logme ( kLogError, LINEINFOFORMAT "Error %d from open():  %s, device %s\n", LINEINFO, errno, strerror ( errno ), device );
         return  serial_port;
     }
 
@@ -113,7 +113,7 @@ int8_t uartInit ( const char* device, const int baudRate ) {
     saio.sa_flags = 0;
     saio.sa_restorer = NULL;
     if ( sigaction ( SIGIO, &saio, NULL ) < 0 ) {
-        logme ( kLogError, LINEINFOFORMAT "Error %i from sigaction():  %s\n", LINEINFO, errno, strerror ( errno ) );
+        logme ( kLogError, LINEINFOFORMAT "Error %d from sigaction():  %s\n", LINEINFO, errno, strerror ( errno ) );
         return -1;
     }
 

@@ -53,20 +53,15 @@ int setupFw(int8_t _uart) {
     printme(NEWLINE, TIMESTAMP, "SRXL2 Spy Linux Rev 0.1");
 
     if(uart < 0) {
-        return  -1;
+    // Todo    return  -1;
     }
 
-#ifdef ARDUINO
-    Serial.begin(115200);
-    int8_t uart = uartInit("", 11520); // Todo
-#endif
-
-    srxl2Bus.begin(uart);
-    srxl2Bus.addDevice(elerons);
-    srxl2Bus.addDevice(rudder);
-    srxl2Bus.addDevice(elevator);
-    srxl2Bus.addDevice(flaps);
-    srxl2Bus.addDevice(lights);
+     srxl2Bus.begin(uart);
+     srxl2Bus.addDevice(elerons);
+     srxl2Bus.addDevice(rudder);
+     srxl2Bus.addDevice(elevator);
+     srxl2Bus.addDevice(flaps);
+     srxl2Bus.addDevice(lights);
 
     serialTerminal.begin(&Serial);
 
@@ -77,7 +72,7 @@ int setupFw(int8_t _uart) {
     serialTerminal.cmdAdd("help", "display help", [](int arg_cnt, char **args) -> void {
         serialTerminal.help();
     });
-    
+
     return 0;
 }
 

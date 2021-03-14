@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifdef ARDUINO
+//#ifdef ARDUINO
 
 // C library headers
 #include <Arduino.h>
@@ -33,7 +33,7 @@ SOFTWARE.
 
 using namespace std;
 
-static std::vector<int> uarts;
+static std::vector<HardwareSerial*> uarts;
 
   
 /**
@@ -44,10 +44,31 @@ static std::vector<int> uarts;
     @return bool:           uart index or < 0 if error
 */
 int8_t uartInit ( const char* device, const int baudRate ) {
+    HardwareSerial* hwSerial;
+    if (!strcmp(device, "Serial1")) {
+         hwSerial = &Serial1;
+         logme ( kLogInfo, LINEINFOFORMAT "Initializing serial port -> %s, baudRate = %d", LINEINFO, device, baudRate);
+    }
+    else if (!strcmp(device, "Serial2")) {
+      
+         hwSerial = &Serial2;
+         logme ( kLogInfo, LINEINFOFORMAT "Initializing serial port -> %s, baudRate = %d", LINEINFO, device, baudRate);
+    }
+    else if (!strcmp(device, "Serial3")) {
+      
+         hwSerial = &Serial3;
+         logme ( kLogInfo, LINEINFOFORMAT "Initializing serial port -> %s, baudRate = %d", LINEINFO, device, baudRate);
+    }
+    else {
+        logme ( kLogError, LINEINFOFORMAT "%s is not valid teensy port", LINEINFO, device);
+        while (1);
+    }
+    uarts.push_back ( hwSerial );
+    uint8_t uartNum = uarts.size() - 1;
     
-    return 0;
+    hwSerial->begin(baudRate, SERIAL_HALF_DUPLEX);
+    return uartNum;
 }
-
 /**
     @brief  close open uart device
 
@@ -55,7 +76,7 @@ int8_t uartInit ( const char* device, const int baudRate ) {
     @return status:         0 is OK, < 0 failure
 */
 void uartClose ( uint8_t uartNum ) {
-  
+    logme ( kLogError, LINEINFOFORMAT "Not implemented function uartClose()", LINEINFO);
 }
 
 /**
@@ -66,7 +87,7 @@ void uartClose ( uint8_t uartNum ) {
     @return void
 */
 int8_t uartSetBaud ( uint8_t uartNum, uint32_t baudRate ) {
- 
+    logme ( kLogError, LINEINFOFORMAT "Not implemented function uartSetBaud()", LINEINFO);
     return 0;
 }
 
@@ -82,9 +103,24 @@ int8_t uartSetBaud ( uint8_t uartNum, uint32_t baudRate ) {
     @return status:         0 is OK, < 0 failure
 */
 int8_t uartReceive ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint8_t timeout_ms ) {
- 
+    
+    if ( uartNum > uarts.size() - 1 ) {
+        logme ( kLogError, LINEINFOFORMAT "Error invalid uart %i:  %s\n", LINEINFO, uartNum );
+        return -1;
+    }
+    
+    uint8_t inBytes = 0;
+    
+    HardwareSerial* serial_port = uarts.at ( uartNum );
+    if (!serial_port->available()) {
+        return 0;
+    }
 
-    return 0;
+    while (serial_port->available() && inBytes < bufferSize) {
+        pBuffer[inBytes] = serial_port->read();
+        inBytes += 1;
+    }
+    return inBytes;
 }
 
 /**
@@ -97,9 +133,15 @@ int8_t uartReceive ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint
     @return status:         0 is OK, < 0 failure
 */
 int8_t uartReceiveBytes ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize, uint8_t timeout_ms ) {
+    unsigned long timeoutAt = micros() + timeout_ms * 1000;
+    int bytesReceived = 0;
 
-  
-    return 0;
+    while ((timeoutAt > micros()) && (bytesReceived < bufferSize)) {
+        int ret = uartReceive (uartNum, &pBuffer[bytesReceived], bufferSize - bytesReceived, timeout_ms );
+        if (ret) bytesReceived += ret;
+    }
+
+    return bytesReceived;
 }
 
 /**
@@ -113,7 +155,13 @@ int8_t uartReceiveBytes ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bufferSize,
 */
 int8_t uartTransmit ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bytesToSend ) {
    
-    return 0;
+    if ( uartNum > uarts.size() - 1 ) {
+        logme ( kLogError, LINEINFOFORMAT "Error invalid uart %i:  %s\n", LINEINFO, uartNum );
+        return -1;
+    }
+
+    HardwareSerial* serial_port = uarts.at ( uartNum );
+    return serial_port->write(pBuffer, bytesToSend);
 }
 
 /**
@@ -123,9 +171,8 @@ int8_t uartTransmit ( uint8_t uartNum, uint8_t* pBuffer, uint8_t bytesToSend ) {
     @return fd:         0 is OK, < 0 failure
 */
 int uartGetFd(uint8_t uartNum) {
-    
+    logme ( kLogError, LINEINFOFORMAT "Not implemented function uartGetFd()", LINEINFO);
     return 0;
-    
 }
 
-#endif
+//#endif
