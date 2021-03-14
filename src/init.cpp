@@ -13,10 +13,10 @@
 #include "log.h"
 #include <srxl2Bus.h>
 #include "srxl2Servo.h"
+#include "srxl2Light.h"
 #include "Cmd.h"
 #include "TaskScheduler.h"
-
-// cmake -DCMAKE_TOOLCHAIN_FILE=../arm-teensy-gnueabihf.cmake  -DHW=32 -DCMAKE_BUILD_TYPE=DEBUG ../
+#include <hw.h>
 
 
 using namespace std;
@@ -24,45 +24,33 @@ using namespace std;
 static SerialTerminal serialTerminal;
 static Scheduler ts;
 static Srxl2Bus srxl2Bus;
-static Srxl2Servo elerons{"elerons", 0x60, kChannnel2, true, 14};
-static Srxl2Servo rudder{"rudder", 0x61, kChannnel4, true, 15};
-static Srxl2Servo elevator{"elevator", 0x62, kChannnel3, false, 16};
-static Srxl2Servo flaps{"flaps", 0x63, kChannnel6, false, 17};
-static Srxl2Servo lights{"flaps", 0x75, kChannnel5, false, 17};
-static int8_t uart = -1;;
-
-#include <cstdint>
-
+static Srxl2Servo elerons{"elerons", 0x65, kChannnel2, true, kEleronsPwmPin};
+static Srxl2Servo rudder{"rudder", 0x61, kChannnel4, true, kRudderPwmPin};
+static Srxl2Servo elevator{"elevator", 0x62, kChannnel3, false, kElevatorPwmPin};
+static Srxl2Servo flaps{"flaps", 0x63, kChannnel6, false, kFlapsPwmPin};
+static Srxl2Light navigationLights{"navigationLights", kNavigationLightsDeviceId, kChannnel9, false, kNavigationLightsPwmPin};
+static Srxl2Light landingLights{"landingLights", kLandingLightsDeviceId, kChannnel10, false, kLandingLightsDeviceId};
 
 /*
  *
  *
  *
  */
-void setUart(int8_t _uart) {
-    uart = _uart;
-}
-
-/*
- *
- *
- *
- */
-int setupFw(int8_t _uart) {
-    uart = _uart;
+int setupFw(int8_t uart) {
     printme(NEWLINE, TIMESTAMP, "SRXL2 Spy Linux Rev 0.1");
 
     if(uart < 0) {
-    // Todo    return  -1;
+        // Todo    return  -1;
     }
 
-     srxl2Bus.begin(uart);
-     srxl2Bus.addDevice(elerons);
-     srxl2Bus.addDevice(rudder);
-     srxl2Bus.addDevice(elevator);
-     srxl2Bus.addDevice(flaps);
-     srxl2Bus.addDevice(lights);
-
+    srxl2Bus.begin(uart);
+    srxl2Bus.addDevice(elerons);
+    srxl2Bus.addDevice(rudder);
+    srxl2Bus.addDevice(elevator);
+    srxl2Bus.addDevice(flaps);
+    srxl2Bus.addDevice(navigationLights);
+    srxl2Bus.addDevice(landingLights);
+    
     serialTerminal.begin(&Serial);
 
     serialTerminal.cmdAdd("list", "list devices", [](int arg_cnt, char **args) -> void {

@@ -26,7 +26,7 @@ SOFTWARE.
 
 
 void mainLoop();
-int setupFw(int8_t _uart);
+int setupFw(int8_t uart);
 
 
 #endif //__SERIALL_H__
