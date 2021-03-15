@@ -124,7 +124,7 @@ file(GLOB_RECURSE lib_source_h_files ./extLib/*.h)
 file(GLOB_RECURSE teensy_lib_cpp_files ./teensyLib/*.cpp)
 file(GLOB_RECURSE teensy_lib_h_files ./teensyLib/*.h)
 include_directories(./teensyLib/pwmServo)
-include_directories(./teensyLib/watchdog)
+include_directories(./teensyLib/watchdogLib)
 
 #message(FATAL_ERROR ${app_source_cpp_files})
 
