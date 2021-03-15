@@ -17,7 +17,7 @@
 #include "Cmd.h"
 #include "TaskScheduler.h"
 #include <hw.h>
-
+#include <watchdog.h>
 
 using namespace std;
 
@@ -31,6 +31,17 @@ static Srxl2Servo flaps{"flaps", kFlapsDeviceId, kChannnel6, false, kFlapsPwmPin
 static Srxl2Light navigationLights{"navigationLights", kNavigationLightsDeviceId, kChannnel9, false, kNavigationLightsPwmPin};
 static Srxl2Light landingLights{"landingLights", kLandingLightsDeviceId, kChannnel10, false, kLandingLightsDeviceId};
 
+Task watchdogTask(700, TASK_FOREVER, [](void) -> void {
+    digitalWrite(WATCH_LED, digitalRead(WATCH_LED) ^ 1);
+    watchdog();
+}, &ts, true, NULL, NULL);
+
+Task terminalTask(100, TASK_FOREVER, [](void) -> void {
+    serialTerminal.cmdPoll();
+}, &ts, true, NULL, NULL);
+Task srxl2Task(1, TASK_FOREVER, [](void) -> void {
+    srxl2Bus.run();
+}, &ts, true, NULL, NULL);
 
 /*
  *
@@ -51,7 +62,7 @@ int setupFw(int8_t uart) {
     srxl2Bus.addDevice(flaps);
     srxl2Bus.addDevice(navigationLights);
     srxl2Bus.addDevice(landingLights);
-    
+
     serialTerminal.begin(&Serial);
 
     serialTerminal.cmdAdd("list", "list devices", [](int arg_cnt, char **args) -> void {
@@ -62,14 +73,14 @@ int setupFw(int8_t uart) {
         serialTerminal.help();
     });
 
+    pinMode(WATCH_LED, OUTPUT);
+    enableWatchdog();
     return 0;
 }
 
 void mainLoop() {
 
     while(true) {
-        srxl2Bus.run();
-        serialTerminal.cmdPoll();
         ts.execute();
     }
 }

@@ -36,7 +36,7 @@ SET(MCU_DEF ARDUINO_TEENSY36)
 SET(teensyStaticLib teensy36)
 SET(MATH_LIB -larm_cortexM4lf_math)
 
-SET(OPTIONS -D__${MCU}__ -DARDUINO=10805 -DTEENSYDUINO=144 -DF_CPU=180000000 -DUSB_SERIAL -DLAYOUT_US_ENGLISH -fsingle-precision-constant -mfloat-abi=hard -mfpu=fpv4-sp-d16)
+SET(OPTIONS -D__${MCU}__ -DARDUINO=10805 -DTEENSYDUINO=144 -DF_CPU=180000000 -DUSB_SERIAL -DLAYOUT_US_ENGLISH -fsingle-precision-constant -mfloat-abi=hard -mfpu=fpv4-sp-d16 -D${MCU_DEF})
 SET(CPUOPTIONS  -mcpu=cortex-m4 -mthumb)
 
 

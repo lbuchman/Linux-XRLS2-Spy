@@ -17,7 +17,6 @@ project (sxrl2Spy)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 
@@ -122,9 +121,14 @@ file(GLOB_RECURSE app_platform_cpp_files ./linux/*.cpp ./teensy/*.cpp)
 file(GLOB_RECURSE lib_cpp_files ./extLib/*.cpp)
 file(GLOB_RECURSE lib_source_h_files ./extLib/*.h)
 
+file(GLOB_RECURSE teensy_lib_cpp_files ./teensyLib/*.cpp)
+file(GLOB_RECURSE teensy_lib_h_files ./teensyLib/*.h)
+include_directories(./teensyLib/pwmServo)
+include_directories(./teensyLib/watchdog)
+
 #message(FATAL_ERROR ${app_source_cpp_files})
 
-add_executable(${PROJECT_NAME} ${app_source_h_files} ${app_source_cpp_files}  ${app_source_h_files} ${app_platform_cpp_files} ${lib_cpp_files} ${lib_source_h_files} ${target_source_cpp_files} ${target_source_c_files} ${target_source_h_files})
+add_executable(${PROJECT_NAME} ${app_source_h_files} ${app_source_cpp_files}  ${teensy_lib_cpp_files}  ${teensy_lib_h_files} ${app_source_h_files} ${app_platform_cpp_files} ${lib_cpp_files} ${lib_source_h_files} ${target_source_cpp_files} ${target_source_c_files} ${target_source_h_files})
 
 IF(NOT ${CMAKE_CROSSCOMPILING} MATCHES "1")
 target_link_libraries(${PROJECT_NAME}
