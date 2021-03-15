@@ -39,6 +39,7 @@ Task watchdogTask(700, TASK_FOREVER, [](void) -> void {
 Task terminalTask(100, TASK_FOREVER, [](void) -> void {
     serialTerminal.cmdPoll();
 }, &ts, true, NULL, NULL);
+
 Task srxl2Task(1, TASK_FOREVER, [](void) -> void {
     srxl2Bus.run();
 }, &ts, true, NULL, NULL);

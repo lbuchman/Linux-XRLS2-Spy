@@ -49,9 +49,9 @@ void enableWatchdog() {
  
     // for this, we will use 1 second WDT timeout (e.g. you must reset it in < 1 sec or a boot occurs)
 
-    WDOG_TOVALL = 0x006d; // The next 2 lines sets the time-out value. This is the value that the watchdog timer compare itself to. 
-    WDOG_TOVALH = 0xdd00;
-    WDOG_PRESC = 0x400;; //     // This sets prescale clock so that the watchdog timer ticks at 7.2MHz
+    WDOG_TOVALL = 1000; // The next 2 lines sets the time-out value. This is the value that the watchdog timer compare itself to. 
+    WDOG_TOVALH = 0;
+    WDOG_PRESC = 0; //     // Thi s sets prescale clock so that the watchdog timer ticks at 7.2MHz
 }
 
 /*
