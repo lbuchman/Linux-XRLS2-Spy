@@ -24,12 +24,13 @@ using namespace std;
 static SerialTerminal serialTerminal;
 static Scheduler ts;
 static Srxl2Bus srxl2Bus;
-static Srxl2Servo elerons{"elerons", 0x65, kChannnel2, true, kEleronsPwmPin};
-static Srxl2Servo rudder{"rudder", 0x61, kChannnel4, true, kRudderPwmPin};
-static Srxl2Servo elevator{"elevator", 0x62, kChannnel3, false, kElevatorPwmPin};
-static Srxl2Servo flaps{"flaps", 0x63, kChannnel6, false, kFlapsPwmPin};
+static Srxl2Servo elerons{"elerons", kEleronsDeviceId, kChannnel2, false, kEleronsPwmPin};
+static Srxl2Servo rudder{"rudder", kRudderDeviceId, kChannnel4, false, kRudderPwmPin};
+static Srxl2Servo elevator{"elevator", kElevatorDeviceId, kChannnel3, false, kElevatorPwmPin};
+static Srxl2Servo flaps{"flaps", kFlapsDeviceId, kChannnel6, false, kFlapsPwmPin};
 static Srxl2Light navigationLights{"navigationLights", kNavigationLightsDeviceId, kChannnel9, false, kNavigationLightsPwmPin};
 static Srxl2Light landingLights{"landingLights", kLandingLightsDeviceId, kChannnel10, false, kLandingLightsDeviceId};
+
 
 /*
  *

@@ -1,4 +1,4 @@
-#ifndef _GLIBCXX_IOSTREAM
+#ifdef ARDUINO
 
 #include <Arduino.h>
 

@@ -1,3 +1,4 @@
+#ifdef ARDUINO
 #include "Arduino.h"
 #include "PWMServo.h"
 
@@ -307,5 +308,5 @@ uint8_t PWMServo::attached() {
 }
 
 #endif
-
+#endif
 

@@ -20,9 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-//#ifdef ARDUINO
+#ifdef ARDUINO
 
 // C library headers
+
 #include <Arduino.h>
 #include <stdio.h>
 #include <string.h>
@@ -175,4 +176,4 @@ int uartGetFd(uint8_t uartNum) {
     return 0;
 }
 
-//#endif
+#endif
