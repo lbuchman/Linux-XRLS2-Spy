@@ -31,6 +31,7 @@ SET (CORE_PATH ${ARDUINO_INST}/hardware/teensy/avr/cores/teensy3)
 
 
 SET(MCU MK20DX256)
+SET(MCU_LOADER TEENSY32)
 SET(MCU_LD ${CORE_PATH}/mk20dx256.ld)
 SET(MCU_DEF ARDUINO_TEENSY32)
 SET(teensyStaticLib teensy32)

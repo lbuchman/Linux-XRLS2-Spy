@@ -13,7 +13,8 @@ include(ExternalProject)
 project (sxrl2Spy)
 
  
-
+get_filename_component(buildDirRelFilePath "${myFile}"
+                       REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 
@@ -138,7 +139,7 @@ target_link_libraries(${PROJECT_NAME}
 ELSE()
 target_link_libraries(${PROJECT_NAME}
      ${MATH_LIB}
-#     stdc++ 
+      stdc++ 
      ${teensyStaticLib}
      m
 )
@@ -155,7 +156,7 @@ add_custom_target(format
 
 add_custom_target(size
     COMMAND
-        ${SIZE} ${PROJECT_NAME}
+        ${SIZE} -A ${PROJECT_NAME}
     VERBATIM
 )
 
@@ -167,10 +168,11 @@ add_custom_command(TARGET ${PROJECT_NAME}
 
 add_custom_target(flash
     COMMAND
-        teensy_loader_cli -s -mmcu=${MCU} -w -v  ${PROJECT_NAME}.hex
+        #teensy_loader_cli -s -mmcu=${MCU_LOADER} -w -r -v  ${PROJECT_NAME}.hex
+        ${TOOLSPATH}/teensy_post_compile -board=${MCU_LOADER} -file=${PROJECT_NAME} -path=${CMAKE_BINARY_DIR} -tools=${TOOLSPATH} -reboot
     VERBATIM
 )
-
+ 
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES

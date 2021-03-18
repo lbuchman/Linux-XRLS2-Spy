@@ -7,7 +7,7 @@
 
 #if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
 #include "Watchdog_t4.h"
-WDT_T4<WDT2> wdt;
+WDT_T4<WDT1> wdt;
 void wdCallback() {
     Serial.println("Watchdog will expire in 1 sec...");
 }
@@ -16,8 +16,8 @@ void wdCallback() {
 */
 void enableWatchdog() {
     WDT_timings_t config;
-    config.trigger = 0; /* in seconds, 0->128 */
-    config.timeout = 1; /* in seconds, 0->128 */
+    config.trigger = 1; /* in seconds, 0->128 */
+    config.timeout = 2; /* in seconds, 0->128 */
     config.callback = wdCallback;
     wdt.begin(config);
 }

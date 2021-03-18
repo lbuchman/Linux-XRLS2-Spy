@@ -4,10 +4,12 @@
 
 #define kEleronsPwmPin            23
 #define kElevatorPwmPin           22
-#define kRudderPwmPin              2
-#define kFlapsPwmPin               3
+#define kRudderPwmPin              3
+#define kFlapsPwmPin               2
 #define kNavigationLightsPwmPin    4
 #define kLandingLightsPwmPin       5
+#define kAux1PwmPin                5
+#define kAux2PwmPin                5
 
 #define kEleronsDeviceId          0x60
 #define kElevatorDeviceId         0x61

@@ -31,6 +31,7 @@ SET (CORE_PATH ${ARDUINO_INST}/hardware/teensy/avr/cores/teensy4)
 
 
 SET(MCU IMXRT1062)
+SET(MCU_LOADER TEENSY40)
 SET(MCU_LD ${CORE_PATH}/imxrt1062.ld)
 SET(MCU_DEF ARDUINO_TEENSY40)
 SET(teensyStaticLib teensy40)
