@@ -168,7 +168,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
 
 add_custom_target(flash
     COMMAND
-        #teensy_loader_cli -s -mmcu=${MCU_LOADER} -w -r -v  ${PROJECT_NAME}.hex
+        #teensy_loader_cli  -mmcu=${MCU_LOADER} -w -s -v  ${PROJECT_NAME}.hex
         ${TOOLSPATH}/teensy_post_compile -board=${MCU_LOADER} -file=${PROJECT_NAME} -path=${CMAKE_BINARY_DIR} -tools=${TOOLSPATH} -reboot
     VERBATIM
 )
