@@ -53,7 +53,7 @@ For each board build libs based on the Makefile there
 
 Delete main.cpp
 
-put  libteensy40.a files libteensy41.a   libteensy36.a into   /home/lbuchman/arduino-1.8.13/hardware/tools/arm/arm-none-eabi/lib/armv7e-m/fpu/
+put  libteensy40.a files libteensy41.a   libteensy36.a into   /home/lbuchman/arduino-1.8.13/hardware/tools/arm/arm-none-eabi/lib/armv7e-m/fpu/fpv5-d16
 
 put  libteensy32.a  into    /home/lbuchman/arduino-1.8.13/hardware/tools/arm/arm-none-eabi/lib/armv7e-m/
 
