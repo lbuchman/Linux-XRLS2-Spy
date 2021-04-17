@@ -1,6 +1,6 @@
 # CMAKE
 
-cmake -DCMAKE_TOOLCHAIN_FILE=../cross/arm-teensy??-gnueabihf.cmake  -DHW=32 -DCMAKE_BUILD_TYPE=Release ../
+cmake -DCMAKE_TOOLCHAIN_FILE=../cross/arm-teensy??-gnueabihf.cmake  -DCMAKE_BUILD_TYPE=Release ../
 
 
 
