@@ -42,7 +42,7 @@ SET(CPUOPTIONS  -mcpu=cortex-m4 -mthumb)
 
 
 
-SET(CPPFLAGS ${CPUOPTIONS} ${OPTIONS} -ffunction-sections -fdata-sections -DHW=32 -I${CORE_PATH})
+SET(CPPFLAGS ${CPUOPTIONS} ${OPTIONS} -ffunction-sections -fdata-sections -DHW=36 -I${CORE_PATH})
 SET(CXXFLAGS ${CPPFLAGS} -felide-constructors -fno-exceptions -fpermissive -fno-rtti -Wno-error=narrowing)
 
 # linker options
