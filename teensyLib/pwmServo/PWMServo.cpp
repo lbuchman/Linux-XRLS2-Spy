@@ -243,7 +243,7 @@ uint8_t PWMServo::attach(int pinArg, int min, int max) {
 }
 
 void PWMServo::write(int angleArg) {
-    //Serial.printf("write, pin=%d, angle=%d\n", pin, angleArg);
+    Serial.printf("writeI, pin=%d, angle=%d\n", pin, angleArg);
     if(pin >= NUM_DIGITAL_PINS) {
         return;
     }
@@ -277,7 +277,7 @@ void PWMServo::write(int angleArg) {
 }
 
 void PWMServo::write(uint32_t _duty) {
-    //Serial.printf("write, pin=%d, angle=%d\n", pin, angleArg);
+    Serial.printf("write, pin=%d, angle=%d\n\r", pin, _duty);
     if(pin >= NUM_DIGITAL_PINS) {
         return;
     }
