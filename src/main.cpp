@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
 #else
     Serial.begin(baudrate);
 
-    while(!Serial);
+   // while(!Serial);
 
     Serial.println("I am here");
     uart = uartInit("Serial1", baudrate);

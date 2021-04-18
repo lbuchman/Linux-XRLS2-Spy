@@ -6,10 +6,20 @@
 #define kElevatorPwmPin           22
 #define kRudderPwmPin              3
 #define kFlapsPwmPin               2
-#define kNavigationLightsPwmPin    4
-#define kLandingLightsPwmPin       5
-#define kAux1PwmPin                5
-#define kAux2PwmPin                5
+#define kNavigationLightsPwmPin    10 /* noot connected */
+#define kLandingLightsPwmPin       11 /* noot connected */
+#define kGearsPwmPin               10
+#define kAux2PwmPin                9
+
+#define kEleronsLedPin             6
+#define kElevatorLedPin            4
+#define kRudderLedPin              12
+#define kFlapsLedPin               14
+#define kNavigationLightsLedPin    15
+#define kLandingLightsLedPin       16
+#define kAux1LedPin                17
+#define kAux2LedPin                20
+
 
 #define kEleronsDeviceId          0x60
 #define kElevatorDeviceId         0x61

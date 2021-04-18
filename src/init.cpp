@@ -32,7 +32,7 @@ static Srxl2Light navigationLights{"navigationLights", kNavigationLightsDeviceId
 static Srxl2Light landingLights{"landingLights", kLandingLightsDeviceId, kChannnel10, false, kLandingLightsDeviceId};
 
 Task watchdogTask(700, TASK_FOREVER, [](void) -> void {
-  //  digitalWrite(WATCH_LED, digitalRead(WATCH_LED) ^ 1);
+    digitalWrite(WATCH_LED, digitalRead(WATCH_LED) ^ 1);
     watchdog();
 }, &ts, true, NULL, NULL);
 
@@ -56,6 +56,7 @@ int setupFw(int8_t uart) {
         // Todo    return  -1;
     }
 
+ 
     srxl2Bus.begin(uart);
     srxl2Bus.addDevice(elerons);
     srxl2Bus.addDevice(rudder);
@@ -73,11 +74,11 @@ int setupFw(int8_t uart) {
     serialTerminal.cmdAdd("help", "display help", [](int arg_cnt, char **args) -> void {
         serialTerminal.help();
     });
-    
-   
+
+
     serialTerminal.cmdAdd("hang", "watchdo test", [](int arg_cnt, char **args) -> void {
-       while(1);
-    }); 
+        while(1);
+    });
 
     pinMode(WATCH_LED, OUTPUT);
     enableWatchdog();
