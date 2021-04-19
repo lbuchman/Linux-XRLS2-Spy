@@ -243,7 +243,6 @@ uint8_t PWMServo::attach(int pinArg, int min, int max) {
 }
 
 void PWMServo::write(int angleArg) {
-    Serial.printf("writeI, pin=%d, angle=%d\n", pin, angleArg);
     if(pin >= NUM_DIGITAL_PINS) {
         return;
     }
@@ -277,12 +276,12 @@ void PWMServo::write(int angleArg) {
 }
 
 void PWMServo::write(uint32_t _duty) {
-    Serial.printf("write, pin=%d, angle=%d\n\r", pin, _duty);
+     
     if(pin >= NUM_DIGITAL_PINS) {
         return;
     }
 
-    uint32_t duty = ((_duty) * 3355) >> 22;
+    uint32_t duty = (256 * (_duty) * 3355) >> 22;
     //float usec = (float)((max16 - min16)<<4) * ((float)angle / 180.0f) + (float)(min16<<4);
     //uint32_t duty = (int)(usec / 20000.0f * 4096.0f);
     //Serial.printf("angle=%d, usec=%.2f, us=%.2f, duty=%d, min=%d, max=%d\n",
@@ -291,6 +290,8 @@ void PWMServo::write(uint32_t _duty) {
     noInterrupts();
     uint32_t oldres = analogWriteResolution(12);
     analogWrite(pin, duty);
+    if (pin == 23)
+    // Serial.printf("write, pin=%d, _duty=%d, duty=%d\n\r", pin, _duty, duty);
     analogWriteResolution(oldres);
     interrupts();
 #else

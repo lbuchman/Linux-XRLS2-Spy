@@ -29,7 +29,7 @@ static Srxl2Servo elevator{"elevator", kNoDeviceId, kChannnel3, kElevatorPwmPin,
 static Srxl2Servo rudder{"rudder", kNoDeviceId, kChannnel4, kRudderPwmPin, Ch4LedPin};
 static Srxl2Servo flaps{"flaps", kNoDeviceId, kChannnel6, kFlapsPwmPin, Ch6LedPin}; //aux1
 static Srxl2Servo gears{"gears", kNoDeviceId, kChannnel5, kGearsPwmPin, Ch5LedPin};
-//static Srxl2Servo gears{"gears", kNoDeviceId, kChannnel5, kAux2PwmPin, Ch6LedPin};
+static Srxl2Servo aux2{"gears", kNoDeviceId, kChannnel7, kAux2PwmPin, Ch7LedPin};
 
 
 //static Srxl2Light navigationLights{"navigationLights", kNavigationLightsDeviceId, kChannnel9, false, kNavigationLightsPwmPin};
@@ -67,6 +67,7 @@ int setupFw(int8_t uart) {
     srxl2Bus.addDevice(elevator);
     srxl2Bus.addDevice(flaps);
     srxl2Bus.addDevice(gears);
+    srxl2Bus.addDevice(aux2);
    // srxl2Bus.addDevice(navigationLights);
    // srxl2Bus.addDevice(landingLights);
 
