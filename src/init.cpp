@@ -24,13 +24,15 @@ using namespace std;
 static SerialTerminal serialTerminal;
 static Scheduler ts;
 static Srxl2Bus srxl2Bus;
-static Srxl2Servo elerons{"elerons", kNoDeviceId, kChannnel2, kEleronsPwmPin, Ch2LedPin};
-static Srxl2Servo elevator{"elevator", kNoDeviceId, kChannnel3, kElevatorPwmPin, Ch3LedPin};
-static Srxl2Servo rudder{"rudder", kNoDeviceId, kChannnel4, kRudderPwmPin, Ch4LedPin};
-static Srxl2Servo flaps{"flaps", kNoDeviceId, kChannnel6, kFlapsPwmPin, Ch6LedPin}; //aux1
-static Srxl2Servo gears{"gears", kNoDeviceId, kChannnel5, kGearsPwmPin, Ch5LedPin};
-static Srxl2Servo aux2{"gears", kNoDeviceId, kChannnel7, kAux2PwmPin, Ch7LedPin};
-
+static Srxl2Servo elerons{"elerons", kNoDeviceId, kChannnel2, kCh2PwmPin, Ch2LedPin};
+static Srxl2Servo elevator{"elevator", kNoDeviceId, kChannnel3, kCh3PwmPin, Ch3LedPin};
+static Srxl2Servo rudder{"rudder", kNoDeviceId, kChannnel4, kCh4PwmPin, Ch4LedPin};
+static Srxl2Servo flaps{"flaps", kNoDeviceId, kChannnel6, kCh5PwmPin, Ch6LedPin}; //aux1
+static Srxl2Servo gears{"gears", kNoDeviceId, kChannnel5, kCh6PwmPin, Ch5LedPin};
+static Srxl2Servo aux2{"aux2Ch", kNoDeviceId, kChannnel7, kAux2PwmPin, Ch7LedPin};
+static Srxl2Servo aux3{"aux3Ch", kNoDeviceId, kChannnel8, 0, Ch8LedPin};
+static Srxl2Servo aux4{"aux4Ch", kNoDeviceId, kChannnel9, 0, Ch9LedPin};
+static Srxl2Servo aux5{"aux5Ch", kNoDeviceId, kChannnel10, 0, Ch10LedPin};
 
 //static Srxl2Light navigationLights{"navigationLights", kNavigationLightsDeviceId, kChannnel9, false, kNavigationLightsPwmPin};
 //static Srxl2Light landingLights{"landingLights", kLandingLightsDeviceId, kChannnel10, false, kLandingLightsDeviceId};
@@ -68,6 +70,9 @@ int setupFw(int8_t uart) {
     srxl2Bus.addDevice(flaps);
     srxl2Bus.addDevice(gears);
     srxl2Bus.addDevice(aux2);
+    srxl2Bus.addDevice(aux3);
+    srxl2Bus.addDevice(aux4);
+    srxl2Bus.addDevice(aux5);
    // srxl2Bus.addDevice(navigationLights);
    // srxl2Bus.addDevice(landingLights);
 

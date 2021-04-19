@@ -2,20 +2,18 @@
 #define HW_CONFIG_H
 
 
-#define kEleronsPwmPin            23
-#define kElevatorPwmPin           22
-#define kRudderPwmPin              3
-#define kFlapsPwmPin               10
-#define kNavigationLightsPwmPin    10 /* not connected */
-#define kLandingLightsPwmPin       11 /* not connected */
-#define kGearsPwmPin               5
+#define kCh2PwmPin                23
+#define kCh3PwmPin                22
+#define kCh4PwmPin                 3
+#define kCh5PwmPin                10
+#define kCh6PwmPin                 5
 #define kAux2PwmPin                9
 
 #define Ch2LedPin                  6
 #define Ch3LedPin                  4
 #define Ch4LedPin                  12
-#define Ch5LedPin                  1
-#define Ch6LedPin                  14
+#define Ch5LedPin                  14
+#define Ch6LedPin                  15
 #define Ch7LedPin                  16
 #define Ch8LedPin                  17
 #define Ch9LedPin                  20
