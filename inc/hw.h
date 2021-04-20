@@ -20,7 +20,7 @@
 #define Ch10LedPin                 2
 
 #define kNoDeviceId               254 /* -1 i.e. oxff is used for the broadcast */
-#define kEleronsDeviceId          0x60
+#define kTelemetry0Id            0x30 /* flight controller */
 #define kElevatorDeviceId         0x61
 #define kRudderDeviceId           0x62
 #define kFlapsDeviceId            0x63

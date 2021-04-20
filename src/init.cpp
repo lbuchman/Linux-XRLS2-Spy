@@ -34,6 +34,10 @@ static Srxl2Servo aux3{"aux3Ch", kNoDeviceId, kChannnel8, 0, Ch8LedPin};
 static Srxl2Servo aux4{"aux4Ch", kNoDeviceId, kChannnel9, 0, Ch9LedPin};
 static Srxl2Servo aux5{"aux5Ch", kNoDeviceId, kChannnel10, 0, Ch10LedPin};
 
+static Srxl2Device telemetry0{"telemetry0", kTelemetry0Id, kNoChannnel};
+
+
+
 //static Srxl2Light navigationLights{"navigationLights", kNavigationLightsDeviceId, kChannnel9, false, kNavigationLightsPwmPin};
 //static Srxl2Light landingLights{"landingLights", kLandingLightsDeviceId, kChannnel10, false, kLandingLightsDeviceId};
 
@@ -73,6 +77,8 @@ int setupFw(int8_t uart) {
     srxl2Bus.addDevice(aux3);
     srxl2Bus.addDevice(aux4);
     srxl2Bus.addDevice(aux5);
+    
+    srxl2Bus.addDevice(telemetry0);
    // srxl2Bus.addDevice(navigationLights);
    // srxl2Bus.addDevice(landingLights);
 

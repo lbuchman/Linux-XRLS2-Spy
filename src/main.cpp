@@ -78,8 +78,11 @@ int main(int argc, char **argv) {
     uart = uartInit(deviceFile, baudrate);
 #else
     Serial.begin(baudrate);
-
-    // while(!Serial);
+    int usbDelayCount = 0;
+    while(!Serial && usbDelayCount < 10) {
+        delay(1000); 
+        usbDelayCount += 1;
+    }
 
     uart = uartInit("Serial1", baudrate);
 #endif
