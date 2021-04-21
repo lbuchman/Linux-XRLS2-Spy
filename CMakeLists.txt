@@ -162,14 +162,15 @@ add_custom_target(size
 
 add_custom_command(TARGET ${PROJECT_NAME}
     COMMAND
-        ${OBJCOPY} -O ihex -R .eeprom ${PROJECT_NAME} ${PROJECT_NAME}.hex
+        ${OBJCOPY} -O ihex -R .eeprom -R .fuse -R .lock -R .signature ${PROJECT_NAME} ${PROJECT_NAME}.hex
+        
     VERBATIM
 )
 
 add_custom_target(flash
     COMMAND
-        #teensy_loader_cli  -mmcu=${MCU_LOADER} -w -s -v  ${PROJECT_NAME}.hex
-        ${TOOLSPATH}/teensy_post_compile -board=${MCU_LOADER} -file=${PROJECT_NAME} -path=${CMAKE_BINARY_DIR} -tools=${TOOLSPATH} -reboot
+        ${TOOLSPATH}/teensy_loader_cli  -mmcu=${MCU_LOADER} -w -s -v  ${PROJECT_NAME}.hex
+        # ${TOOLSPATH}/teensy_post_compile -board=${MCU_LOADER} -file=${PROJECT_NAME} -path=${CMAKE_BINARY_DIR} -tools=${TOOLSPATH} -reboot
     VERBATIM
 )
  
