@@ -36,7 +36,7 @@ static Srxl2Servo aux4{"aux4Ch", kNoDeviceId, kChannnel9, 0, Ch9LedPin};
 static Srxl2Servo aux5{"aux5Ch", kNoDeviceId, kChannnel10, 0, Ch10LedPin};
 
 static Srxl2Device telemetry0{"telemetry0", kTelemetry0Id, kNoChannnel};
-
+static MasterI2CTelemetry telemetryMaster;
 
 
 //static Srxl2Light navigationLights{"navigationLights", kNavigationLightsDeviceId, kChannnel9, false, kNavigationLightsPwmPin};
@@ -55,6 +55,11 @@ Task srxl2Task(1, TASK_FOREVER, [](void) -> void {
     srxl2Bus.run();
 }, &ts, true, NULL, NULL);
 
+Task telemetryTask(20, TASK_FOREVER, [](void) -> void {
+    telemetryMaster.run();
+}, &ts, true, NULL, NULL);
+
+
 /*
  *
  *
@@ -67,7 +72,7 @@ int setupFw(int8_t uart) {
         // Todo    return  -1;
     }
 
- 
+
     srxl2Bus.begin(uart);
     srxl2Bus.addDevice(elerons);
     srxl2Bus.addDevice(rudder);
@@ -78,10 +83,13 @@ int setupFw(int8_t uart) {
     srxl2Bus.addDevice(aux3);
     srxl2Bus.addDevice(aux4);
     srxl2Bus.addDevice(aux5);
-    
+
     srxl2Bus.addDevice(telemetry0);
-   // srxl2Bus.addDevice(navigationLights);
-   // srxl2Bus.addDevice(landingLights);
+    // srxl2Bus.addDevice(navigationLights);
+    // srxl2Bus.addDevice(landingLights);
+
+    telemetryMaster.begin();
+
 
     serialTerminal.begin(&Serial);
 

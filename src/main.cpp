@@ -79,8 +79,9 @@ int main(int argc, char **argv) {
 #else
     Serial.begin(baudrate);
     int usbDelayCount = 0;
+
     while(!Serial && usbDelayCount < 10) {
-        delay(1000); 
+        delay(1000);
         usbDelayCount += 1;
     }
 

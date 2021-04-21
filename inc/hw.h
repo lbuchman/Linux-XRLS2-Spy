@@ -30,4 +30,7 @@
 
 #define WATCH_LED          13
 
+
+// see teensy3i2cTelemetryMaster.h for Wire declaration
+
 #endif
