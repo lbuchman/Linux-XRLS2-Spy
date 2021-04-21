@@ -18,6 +18,7 @@
 #include "TaskScheduler.h"
 #include <hw.h>
 #include <watchdog.h>
+#include <teensy3i2cTelemetryMaster.h>
 
 using namespace std;
 

@@ -92,6 +92,21 @@ ExternalProject_Add(
     INSTALL_COMMAND ""
     UPDATE_COMMAND ""
 ) 
+
+ExternalProject_Add(
+    i2c_t3
+    GIT_REPOSITORY https://github.com/nox771/i2c_t3.git
+    GIT_TAG master
+    PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/extLib/i2c_t3
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    UPDATE_COMMAND ""
+) 
+
+ExternalProject_Get_Property(i2c_t3 source_dir)
+include_directories(${source_dir})
+file(GLOB_RECURSE libs_source_cpp_files ${source_dir}/*.cpp)
 ExternalProject_Get_Property(SRXL2 source_dir)
 include_directories(${source_dir})
 file(GLOB_RECURSE libs_source_cpp_files ${source_dir}/*.cpp)
