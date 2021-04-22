@@ -28,7 +28,9 @@ class MasterI2CTelemetry: public SimpleEvent {
             Wire.begin(I2C_MASTER, 0x00, i2cPins, I2C_PULLUP_EXT, 100000);
             Wire.setDefaultTimeout(20000);
             // Wire.setOpMode(I2C_OP_MODE_DMA);
-
+            Wire.onTransmitDone(transmitDone);
+            Wire.onReqFromDone(requestDone);
+            Wire.onError(errorEvent);
             return true;
         }
 
@@ -50,18 +52,22 @@ class MasterI2CTelemetry: public SimpleEvent {
                 logme(kLogError, LINEINFOFORMAT "I2C Error target = 0x%x, %s", LINEINFO, target, strError.c_str());
             }
 
+            if(requestIsDone) {
+                size_t sizeIn = Wire.available();
+
+                if(sizeIn) {
+                    Wire.read(buffer, sizeIn);
+                    hexdump(buffer, 16, true, kLogError, micros(), 0);
+                }
+            }
+
             if(isBusy()) {
                 return;
             }
 
-            size_t sizeIn = Wire.available();
 
-            if(!sizeIn) {
-                return;
-            }
-
-            Wire.read(buffer, sizeIn);
-            hexdump(buffer, 16, true, kLogError, micros(), 0);
+            target = 0x12;
+            requestData(sizeof(SrxlTelemetryData));
         }
 
 
@@ -122,6 +128,7 @@ class MasterI2CTelemetry: public SimpleEvent {
          *
          */
         bool isBusy() {
+            Serial.printf("%d %d\n\r", transmitIsDone, requestIsDone);
             return !transmitIsDone || !requestIsDone;
         }
 
@@ -129,21 +136,21 @@ class MasterI2CTelemetry: public SimpleEvent {
         /*
          *
          */
-        void transmitDone(void) {
+        static void transmitDone(void) {
             self->transmitIsDone = true;
         }
 
         /*
          *
          */
-        void requestDone(void) {
+        static void requestDone(void) {
             self->requestIsDone = true;
         }
 
         /*
          *
          */
-        void errorEvent(void) {
+        static void errorEvent(void) {
             self->clearFlags();
             self->lastError = Wire.status();
 
