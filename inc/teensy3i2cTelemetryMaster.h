@@ -51,13 +51,18 @@ class MasterI2CTelemetry: public SimpleEvent {
                 lastError = 0;
                 logme(kLogError, LINEINFOFORMAT "I2C Error target = 0x%x, %s", LINEINFO, target, strError.c_str());
             }
-
+            
+            clearTimeout();
+            
             if(requestIsDone) {
                 size_t sizeIn = Wire.available();
 
                 if(sizeIn) {
                     Wire.read(buffer, sizeIn);
-                    hexdump(buffer, 16, true, kLogError, micros(), 0);
+
+                    if(buffer[0]) {
+                        hexdump(buffer, 16, true, kLogError, micros(), 0);
+                    }
                 }
             }
 
@@ -70,7 +75,21 @@ class MasterI2CTelemetry: public SimpleEvent {
             requestData(sizeof(SrxlTelemetryData));
         }
 
+        /*
+         *
+         */
+        String getI2CErrorSTat() {
+            String ret;
+            ret = "\t\tI2C_ERRCNT_RESET_BUS: = " + String(Wire.getErrorCount(I2C_ERRCNT_RESET_BUS)) + "\n\r";
+            ret += "\t\tI2C_ERRCNT_TIMEOUT: = " + String(Wire.getErrorCount(I2C_ERRCNT_TIMEOUT)) + "\n\r";
+            ret += "\t\tI2C_ERRCNT_ADDR_NAK: = " + String(Wire.getErrorCount(I2C_ERRCNT_ADDR_NAK)) + "\n\r";
+            ret = "\t\tI2C_ERRCNT_DATA_NAK: = " + String(Wire.getErrorCount(I2C_ERRCNT_DATA_NAK)) + "\n\r";
+            ret += "\t\tI2C_ERRCNT_ARBL: = " + String(Wire.getErrorCount(I2C_ERRCNT_ARBL)) + "\n\r";
+            ret += "\t\tI2C_ERRCNT_NOT_ACQ: = " + String(Wire.getErrorCount(I2C_ERRCNT_NOT_ACQ)) + "\n\r";
+            ret += "\t\tI2C_ERRCNT_DMA_ERR: = " + String(Wire.getErrorCount(I2C_ERRCNT_DMA_ERR)) + "\n\r";
 
+            return ret;
+        }
     private:
         const static int kTelementry = 0;
         bool transmitIsDone = true;
@@ -79,6 +98,7 @@ class MasterI2CTelemetry: public SimpleEvent {
         static MasterI2CTelemetry* self;
         uint8_t buffer[256];
         uint8_t target;
+        int timer = millis();
         int lastError = 0;
         String i2cErrorToStrint(int error) {
             switch(error) {
@@ -112,6 +132,16 @@ class MasterI2CTelemetry: public SimpleEvent {
         /*
          *
          */
+        void clearTimeout() {
+            if ((millis() - timer) > 20) {
+                Wire.resetBus();
+                clearFlags();
+            }
+        }
+        
+        /*
+         *
+         */
         void clearFlags() {
             transmitIsDone = requestIsDone = true;
         }
@@ -119,6 +149,7 @@ class MasterI2CTelemetry: public SimpleEvent {
          *
          */
         void requestData(size_t size) {
+            timer = millis();
             requestIsDone = false;
             Wire.sendRequest(target, size); // Read from Slave (string len unknown, request full buffer), non-blocking
         }
@@ -128,7 +159,6 @@ class MasterI2CTelemetry: public SimpleEvent {
          *
          */
         bool isBusy() {
-            Serial.printf("%d %d\n\r", transmitIsDone, requestIsDone);
             return !transmitIsDone || !requestIsDone;
         }
 

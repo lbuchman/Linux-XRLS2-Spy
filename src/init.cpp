@@ -106,6 +106,11 @@ int setupFw(int8_t uart) {
         while(1);
     });
 
+    serialTerminal.cmdAdd("i2cerr", "i2c errors stat", [](int arg_cnt, char **args) -> void {
+        printme(NEWLINE, TIMESTAMP, "I2C Stat: \n\r%s", telemetryMaster.getI2CErrorSTat().c_str());
+    });
+
+
     pinMode(WATCH_LED, OUTPUT);
     enableWatchdog();
     return 0;
