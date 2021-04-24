@@ -19,6 +19,7 @@
 #include <hw.h>
 #include <watchdog.h>
 #include <teensy3i2cTelemetryMaster.h>
+#include <spm_srxl.h>
 
 using namespace std;
 
@@ -55,10 +56,19 @@ Task srxl2Task(1, TASK_FOREVER, [](void) -> void {
     srxl2Bus.run();
 }, &ts, true, NULL, NULL);
 
-Task telemetryTask(20, TASK_FOREVER, [](void) -> void {
+Task telemetryTask(telemetryMaster.getPullInterval(), TASK_FOREVER, [](void) -> void {
     telemetryMaster.run();
 }, &ts, true, NULL, NULL);
 
+Task telemetryScanTask(10000, 2, [](void) -> void {
+    static bool firstTime = true;
+    if (firstTime) {
+       firstTime = false;
+       return;
+    }
+
+    telemetryMaster.scanXbus();
+}, &ts, true, NULL, NULL);
 
 /*
  *
@@ -121,7 +131,9 @@ int setupFw(int8_t uart) {
 
     pinMode(WATCH_LED, OUTPUT);
     enableWatchdog();
-    // telemetryMaster.scanXbus();
+    telemetryMaster.onTelementryDataIn([] (SrxlTelemetryData * data) -> void {
+       // telemetry0.addTelemetryData(data);
+    });
 
     return 0;
 }
