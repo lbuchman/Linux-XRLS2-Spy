@@ -2,6 +2,7 @@
 #define __I2C_MASTER_TELEMETRY_H__
 
 #include <cstdint>
+#include <vector>
 
 #include <simpleEvents.h>
 #include <spektrumTelemetrySensors.h>
@@ -11,6 +12,11 @@
 
 #ifdef ARDUINO
 #include <i2c_t3.h>
+
+struct Device {
+    uint8_t id;
+    int count;
+};
 
 typedef void (*Srxl2TelemetryEvent)(SrxlTelemetryData*);
 
@@ -37,6 +43,15 @@ class MasterI2CTelemetry: public SimpleEvent {
         /*
         * ****************************************************************************************
         */
+        void list() {
+            for(std::vector<Device>::iterator it = devices.begin();  it != devices.end(); it++) {
+                printme(NEWLINE, NO_TIMESTAMP, "\t\t device 0x%x,  count = %d", it->id, it->count);
+            }
+        }
+
+        /*
+        * ****************************************************************************************
+        */
         void onTelementryDataIn(Srxl2TelemetryEvent eventFunction) {
             logme(kLogInfo, LINEINFOFORMAT "Register Event kTelementry = %d", LINEINFO, kTelementry);
             registerEvent(kTelementry, (event) eventFunction);
@@ -46,14 +61,20 @@ class MasterI2CTelemetry: public SimpleEvent {
         * ****************************************************************************************
         */
         void run() {
+            if(enumerating) {
+                enumerate();
+                return;
+            }
+
+
             if(lastError) {
                 String strError =  i2cErrorToStrint(lastError);
                 lastError = 0;
                 logme(kLogError, LINEINFOFORMAT "I2C Error target = 0x%x, %s", LINEINFO, target, strError.c_str());
             }
-            
+
             clearTimeout();
-            
+
             if(requestIsDone) {
                 size_t sizeIn = Wire.available();
 
@@ -61,7 +82,7 @@ class MasterI2CTelemetry: public SimpleEvent {
                     Wire.read(buffer, sizeIn);
 
                     if(buffer[0]) {
-                        hexdump(buffer, 16, true, kLogError, micros(), 0);
+                        //     hexdump(buffer, 16, true, kLogError, micros(), 0);
                     }
                 }
             }
@@ -72,6 +93,18 @@ class MasterI2CTelemetry: public SimpleEvent {
 
 
             target = 0x12;
+            requestData(sizeof(SrxlTelemetryData));
+        }
+
+
+        /*
+         *
+         */
+        void scanXbus() {
+            enumerating = true;
+            target = 0x03;
+            Wire.resetBus();
+            clearFlags();
             requestData(sizeof(SrxlTelemetryData));
         }
 
@@ -90,7 +123,23 @@ class MasterI2CTelemetry: public SimpleEvent {
 
             return ret;
         }
+        /*
+         *
+         *
+         *
+                      device 0x11,  count = 0
+                      device 0x12,  count = 0
+                      device 0x16,  count = 0
+                      device 0x17,  count = 0
+                      device 0x34,  count = 0
+                      device 0x50,  count = 0
+         **/
+
     private:
+        std::vector<Device> devices;
+        const int kEnumCount = 3;
+        int enumCount = kEnumCount;
+        bool enumerating = false;
         const static int kTelementry = 0;
         bool transmitIsDone = true;
         bool requestIsDone = true;
@@ -129,16 +178,44 @@ class MasterI2CTelemetry: public SimpleEvent {
             }
         }
 
+        bool incTarget(bool force = false) {
+            if(enumCount && !force) {
+                enumCount -= 1;
+                logme(kLogDebug, LINEINFOFORMAT "Increment target = 0x%x try = %d", LINEINFO, target, enumCount);
+                if(!enumCount) {
+                    target += 1;
+                    enumCount = kEnumCount;
+                    logme(kLogDebug, LINEINFOFORMAT "Inc target = 0x%x try = %d", LINEINFO, target, enumCount);
+                    if(target > TELE_DEVICE_MAX) {
+                        return false;
+                    }
+                }
+            }
+            else {
+                target += 1;
+                enumCount = kEnumCount;
+                logme(kLogDebug, LINEINFOFORMAT "Inc target = 0x%x", LINEINFO, target);
+                if(target > TELE_DEVICE_MAX) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         /*
          *
          */
-        void clearTimeout() {
-            if ((millis() - timer) > 20) {
+        bool clearTimeout() {
+            if((millis() - timer) > 20) {
                 Wire.resetBus();
                 clearFlags();
+                return true;
             }
+
+            return false;
         }
-        
+
         /*
          *
          */
@@ -151,6 +228,7 @@ class MasterI2CTelemetry: public SimpleEvent {
         void requestData(size_t size) {
             timer = millis();
             requestIsDone = false;
+            // logme(kLogDebug, LINEINFOFORMAT "Req from target = 0x%x", LINEINFO, target);
             Wire.sendRequest(target, size); // Read from Slave (string len unknown, request full buffer), non-blocking
         }
 
@@ -183,6 +261,63 @@ class MasterI2CTelemetry: public SimpleEvent {
         static void errorEvent(void) {
             self->clearFlags();
             self->lastError = Wire.status();
+
+        }
+
+
+        /*
+         *
+         */
+        void enumerate() {
+            if(lastError) {
+                String strError =  i2cErrorToStrint(lastError);
+                lastError = 0;
+                logme(kLogError, LINEINFOFORMAT "I2C Error target = 0x%x, %s", LINEINFO, target, strError.c_str());
+
+                if(!incTarget()) {
+                    enumerating = false;
+                    return;
+                }
+
+                requestData(sizeof(SrxlTelemetryData));
+            }
+
+            if(clearTimeout()) {
+                logme(kLogError, LINEINFOFORMAT "I2C Timeout target = 0x%x", LINEINFO, target);
+
+                if(!incTarget()) {
+                    enumerating = false;
+                    return;
+                }
+
+                requestData(sizeof(SrxlTelemetryData));
+                return;
+            }
+
+            if(requestIsDone) {
+
+                size_t sizeIn = Wire.available();
+
+                if(sizeIn) {
+                    Wire.read(buffer, sizeIn);
+                    Device device = { target, 0 };
+                    bool incForce = true;
+                    if(buffer[0]) {
+                        devices.push_back(device);
+                        logme(kLogInfo, LINEINFOFORMAT "found device = 0x%x", LINEINFO, target);
+                    }
+                    else {
+                       incForce = false;    
+                    }
+
+                    if(!incTarget(incForce)) {
+                        enumerating = false;
+                        return;
+                    }
+
+                    requestData(sizeof(SrxlTelemetryData));
+                }
+            }
 
         }
 };

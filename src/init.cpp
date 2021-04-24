@@ -110,9 +110,19 @@ int setupFw(int8_t uart) {
         printme(NEWLINE, TIMESTAMP, "I2C Stat: \n\r%s", telemetryMaster.getI2CErrorSTat().c_str());
     });
 
+    serialTerminal.cmdAdd("scan", "scan x-bus", [](int arg_cnt, char **args) -> void {
+        telemetryMaster.scanXbus();
+    });
+
+
+    serialTerminal.cmdAdd("list", "list x-bus devices", [](int arg_cnt, char **args) -> void {
+        telemetryMaster.list();
+    });
 
     pinMode(WATCH_LED, OUTPUT);
     enableWatchdog();
+    // telemetryMaster.scanXbus();
+
     return 0;
 }
 
