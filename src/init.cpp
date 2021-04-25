@@ -62,9 +62,10 @@ Task telemetryTask(telemetryMaster.getPullInterval(), TASK_FOREVER, [](void) -> 
 
 Task telemetryScanTask(10000, 2, [](void) -> void {
     static bool firstTime = true;
-    if (firstTime) {
-       firstTime = false;
-       return;
+
+    if(firstTime) {
+        firstTime = false;
+        return;
     }
 
     telemetryMaster.scanXbus();
@@ -131,8 +132,8 @@ int setupFw(int8_t uart) {
 
     pinMode(WATCH_LED, OUTPUT);
     enableWatchdog();
-    telemetryMaster.onTelementryDataIn([] (SrxlTelemetryData * data) -> void {
-       // telemetry0.addTelemetryData(data);
+    telemetryMaster.onTelementryDataIn([](SrxlTelemetryData * data) -> void {
+        telemetry0.addTelementryData(data);
     });
 
     return 0;

@@ -75,9 +75,12 @@ class MasterI2CTelemetry: public SimpleEvent {
                 logme(kLogError, LINEINFOFORMAT "I2C Error target = 0x%x, %s", LINEINFO, target, strError.c_str());
             }
 
-            if (clearTimeout()) {
+            if(clearTimeout()) {
                 Device* pdevice = getCurrentDevice();
-                if (pdevice) pdevice->errors += 1;   
+
+                if(pdevice) {
+                    pdevice->errors += 1;
+                }
             }
 
             if(requestIsDone) {
@@ -89,7 +92,11 @@ class MasterI2CTelemetry: public SimpleEvent {
                     if(buffer[0]) {
                         //     hexdump(buffer, 16, true, kLogError, micros(), 0);
                         Device* pdevice = getCurrentDevice();
-                        if (pdevice) pdevice->count += 1;
+
+                        if(pdevice) {
+                            pdevice->count += 1;
+                        }
+
                         fireEvent(kTelementry, buffer);
                     }
                 }
@@ -100,7 +107,8 @@ class MasterI2CTelemetry: public SimpleEvent {
             }
 
             Device* pdevice = getNextDevice();
-            if (pdevice) {
+
+            if(pdevice) {
                 target = pdevice->id;
                 requestData(sizeof(SrxlTelemetryData));
             }
@@ -133,15 +141,15 @@ class MasterI2CTelemetry: public SimpleEvent {
 
             return ret;
         }
-        
+
         /*
-         * 
+         *
          * */
         uint32_t getPullInterval() {
-            return pullInterval;   
+            return pullInterval;
         }
-        
-        
+
+
         /*
          *
          *
@@ -156,7 +164,7 @@ class MasterI2CTelemetry: public SimpleEvent {
 
     private:
         const uint32_t pullInterval  = 20;
-        const uint32_t deviceTimeout = pullInterval *3;
+        const uint32_t deviceTimeout = pullInterval * 3;
         std::vector<Device> devices;
         size_t currentTarget = 0;
         const int kEnumCount = 3;
@@ -203,6 +211,7 @@ class MasterI2CTelemetry: public SimpleEvent {
         bool incTarget(bool force = false) {
             if(enumCount && !force) {
                 enumCount -= 1;
+
                 if(enumCount) {
                     return true;
                 }
@@ -245,7 +254,11 @@ class MasterI2CTelemetry: public SimpleEvent {
         void requestData(size_t size, bool log = false) {
             timer = millis();
             requestIsDone = false;
-            if (log) logme(kLogDebug, LINEINFOFORMAT "Req from target = 0x%x", LINEINFO, target);
+
+            if(log) {
+                logme(kLogDebug, LINEINFOFORMAT "Req from target = 0x%x", LINEINFO, target);
+            }
+
             Wire.sendRequest(target, size); // Read from Slave (string len unknown, request full buffer), non-blocking
         }
 
@@ -338,25 +351,35 @@ class MasterI2CTelemetry: public SimpleEvent {
             }
 
         }
-        
+
         /*
-         * 
-         * 
+         *
+         *
          * */
         Device* getNextDevice() {
-            if (!devices.size()) return NULL;
+            if(!devices.size()) {
+                return NULL;
+            }
+
             currentTarget += 1;
-            if (currentTarget >= devices.size()) currentTarget = 0;
-            return &devices[currentTarget];            
+
+            if(currentTarget >= devices.size()) {
+                currentTarget = 0;
+            }
+
+            return &devices[currentTarget];
         }
-        
-                /*
-         * 
-         * 
-         * */
+
+        /*
+        *
+        *
+        * */
         Device* getCurrentDevice() {
-            if (!devices.size()) return NULL;
-            return &devices[currentTarget];            
+            if(!devices.size()) {
+                return NULL;
+            }
+
+            return &devices[currentTarget];
         }
 };
 
