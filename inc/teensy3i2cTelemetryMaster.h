@@ -52,7 +52,7 @@ class MasterI2CTelemetry: public SimpleEvent {
         /*
         * ****************************************************************************************
         */
-        void onTelementryDataIn(Srxl2TelemetryEvent eventFunction) {
+        void onTelementryDataIn(event eventFunction) {
             logme(kLogInfo, LINEINFOFORMAT "Register Event kTelementry = %d", LINEINFO, kTelementry);
             registerEvent(kTelementry, (event) eventFunction);
         }

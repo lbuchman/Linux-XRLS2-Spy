@@ -21,6 +21,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 
+
 IF(${CMAKE_CROSSCOMPILING} MATCHES "1")
 message(STATUS -----------------------------Cross Compiling --------------------)
 #file(GLOB_RECURSE target_source_cpp_files ${CORE_PATH}/*.cpp)

@@ -132,7 +132,8 @@ int setupFw(int8_t uart) {
 
     pinMode(WATCH_LED, OUTPUT);
     enableWatchdog();
-    telemetryMaster.onTelementryDataIn([](SrxlTelemetryData * data) -> void {
+    telemetryMaster.onTelementryDataIn([](void* _data) -> void {
+        SrxlTelemetryData * data = (SrxlTelemetryData *) _data;
         telemetry0.addTelementryData(data);
     });
 
